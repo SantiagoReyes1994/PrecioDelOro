@@ -1,7 +1,9 @@
-# Propuesta Avance 2
+# Propuesta Avance 2 & 3 
 
 ## Cargar Librerias a usar
 ```{r}
+suppressMessages({
+
 library(lubridate) 
 library(forecast) 
 library(MLmetrics) 
@@ -12,6 +14,8 @@ library(imputeTS)
 library(ggplot2)
 library(tidyverse)
 theme_set(theme_minimal())
+
+})
 ```
 ## Cargar la data del Data set
 ```{r}
@@ -23,7 +27,7 @@ head(data)
 # Validar los tipos de datos de cada Columna
 str(data)
 ```
-La columna "Date" está en tipo "character", por lo tanto toca convertir esta en formato de Tiempo
+ Se ajusta la columna "Date" está en tipo "character", por lo tanto toca convertir esta en formato de Tiempo
 
 ```{r}
 data <- data %>% 
@@ -31,21 +35,26 @@ data <- data %>%
 
 str(data)
 ```
-Todas las columnas se encuentran en el tipo correcto. 
+Se identifica que Todas las columnas se encuentran en el tipo correcto. 
 
 ## Padding & imputation
-Si observamos la data solo comprende fechas entre semana, pero en series de tiempo deberiamos tener la data mas completa en la medida de lo posible.
+
+Si observamos la data solo comprende fechas entre semana, pero en series de tiempo deberíamos tener la data mas completa en la medida de lo posible.
 ```{r}
-#Padding
+# Padding
 data <- data %>% 
   pad(interval = "day") 
 
-# imputar NA values con la ultima observacion
-data_clean <- data %>% na.locf()
+
+suppressWarnings({
+  # Imputar NA values con la última observación
+  data_clean <- data %>% na.locf()
+})
 
 head(data_clean)
 ```
 ## Exploración de la data
+
 Para explorar la data debemos primero crear el objeto de serie de tiempo
 ```{r}
 # ts
@@ -56,17 +65,28 @@ autoplot()
 Se observa un comportamiento INCREMENTAL a traves del tiempo y adicionalmente se podria inferir un modelo multiplicativo
 
 ```{r}
-# Calcular el promedio móvil
-promedio_movil <- ma(data_ts, order = 12)  # Cambia el valor de 'order' según tus necesidades
-# Graficar la serie de tiempo y el promedio móvil por separado
-autoplot(data_ts) + ggtitle("Serie de Tiempo") +
-  autolayer(promedio_movil, series = "Promedio Móvil")
+
+
+
+  # Calcular el promedio móvil
+  promedio_movil <- ma(data_ts, order = 12)  
+  autoplot(data_ts) + ggtitle("Serie de Tiempo") +
+    autolayer(promedio_movil, series = "Promedio Móvil")
+
+
+
+
+
+
 ```
 
-Se puede apreciar que el promedio movil, sigue de cerca a la serie temporal indidcando que hay poco ruido en la variable y que se sigue una tendencia clara.
 
-## Descomposición
-Se realiza la descomposicion para validar la tendencia, estacionalidad.
+Se observa que el promedio móvil sigue de cerca la serie temporal, lo que sugiere una presencia limitada de ruido en los datos y una tendencia clara en su evolución.
+
+## Descomposición de la Serie Temporal
+
+Se realiza la descomposición de la serie temporal en sus componentes de tendencia, estacionalidad y residuos  
+
 ```{r}
 data_decompose <- data_ts %>% 
   decompose(type = "multiplicative")
@@ -74,7 +94,11 @@ data_decompose <- data_ts %>%
 data_decompose %>% 
   autoplot()
 ```
-en efecto se evidencia una tendencia lineal y adicionalmente hay un patron de estacionalidad en la data
+
+
+Se evidencia claramente una tendencia lineal en los datos, acompañada de un patrón de estacionalidad adicional.
+
+
 
 ## Análisis de estacionalidad
 
@@ -82,7 +106,48 @@ en efecto se evidencia una tendencia lineal y adicionalmente hay un patron de es
 data_decompose$seasonal %>% 
   autoplot()
 ```
-Se tratará de validar un patron mensual del precio de oro entre el 2014 y 2021
+
+Después de la visualización del componente estacional de la serie temporal, se procederá a analizar y validar un posible patrón en los precios del oro entre los años 2014 y 2023. Este análisis ayudará a comprender mejor la naturaleza de la estacionalidad presente en los datos a lo largo de este período
+
+```{r}
+ggseasonplot(data_ts, year.labels = TRUE, year.labels.left = TRUE) +
+  labs(title = "Gráfico Estacional de Precios del Oro (Múltiples Años)", 
+       x = "Mes", 
+       y = "Precio") +
+  theme_minimal()
+
+
+```
+
+Se observa un patrón recurrente en los precios, con picos y valles que parecen repetirse cada año. Se identifica una trendencia incremental constante del periodo 2019 al 2022  principalmente 
+
+
+Alicamos La prueba de Dickey-Fuller Aumentada (ADF) para determinar si una serie temporal es estacionaria o no.
+```{r}
+
+
+suppressMessages({
+
+# Prueba de estacionariedad (ADF)
+adf_test <- adf.test(data_ts)
+adf_test
+
+
+})
+
+
+
+```
+La prueba de Dickey-Fuller aumentada (ADF) identifica  que la serie temporal no es estacionaria. Esto se basa en el estadístico de prueba (-2.1155) y el valor p (0.5294). Dado que el valor p es mayor que el nivel de significancia típico de 0.05, no hay suficiente evidencia para rechazar la hipótesis nula de no estacionariedad.
+
+Dado que la serie no es estacionaria según la prueba ADF, Proceedemos con la diferenciación 
+
+
+## Análisis de Diferenciación
+
+
+
+Se realiza un analisis  comparativo de los meses  identificando el comportamiento
 
 ```{r}
 data_clean %>% 
@@ -94,4 +159,132 @@ data_clean %>%
   geom_col()+
   theme_minimal()
 ```
-Los precios de oro tienden a ser mas altos entre enero a Julio, mierntas que agosto a diciembre el precio baja.
+El análisis de la estacionalidad mensual revela patrones en los precios del oro a lo largo del año. Se observa que estos son más altos durante  enero a julio, mientras que disminuyen de agosto a diciembre 
+
+
+```{r}
+# Diferenciación de la serie temporal
+diff_data_ts <- diff(data_ts)
+
+autoplot(diff_data_ts) + 
+  labs(title = "Serie Diferenciada", 
+       y = "Diferencia", 
+       x = "Tiempo")
+
+```
+
+Con este grafico observamos parecen más amplias  entre sí durante el año 2020 y 2021, lo que indica cambios significativos en el comportamiento de la serie durante ese año
+
+
+
+Continuamos el análisis al representar tanto la serie temporal original como la serie diferenciada en un único gráfico.
+
+
+```{r}
+# Diferenciación de la serie temporal
+diff_data_ts <- diff(data_ts)
+
+
+par(mfrow=c(2,1))
+plot(data_ts, main="Serie Original", ylab="Valor", xlab="Tiempo")
+plot(diff_data_ts, main="Serie Diferenciada", ylab="Diferencia", xlab="Tiempo")
+
+```
+Esto nos permite comparar visualmente cómo cambian los datos después de aplicar la diferenciación.
+
+
+```{r}
+# Calcular la función de autocorrelación (ACF)
+acf_diff <- acf(diff_data_ts, main = "Función de Autocorrelación (ACF) de la Serie Diferenciada")
+
+# Calcular la función de autocorrelación parcial (PACF)
+pacf_diff <- pacf(diff_data_ts, main = "Función de Autocorrelación Parcial (PACF) de la Serie Diferenciada")
+
+```
+
+
+ Los coeficientes de correlación fuera de estos límites son estadísticamente significativos. el limigte superio es de :0.0349826 y el inferior de: -0.0349826
+
+
+```{r}
+
+suppressMessages({
+
+# Prueba ADF en la serie diferenciada
+adf_test_diff <- adf.test(diff_data_ts)
+adf_test_diff
+
+})
+
+
+```
+Se aplico la prueba ADF en la serie diferenciada arrojó un estadístico de prueba de -15.347 y un valor p de 0.01. Estos resultados indican una evidencia que la serie temporal tiene una tendencia constante  unitaria , lo que implica que la serie es estacionaria.
+
+## Transformación para Controlar la Tendencia y Variabilidad
+ 
+ 
+```{r}
+# Transformación logarítmica
+log_data_ts <- log(data_ts)
+
+# Gráfico de la serie transformada
+plot(log_data_ts, main="Serie Transformada (Logarítmica)", ylab="Valor Transformado", xlab="Tiempo")
+
+```
+
+```{r}
+# Cargar el paquete knitr
+library(knitr)
+
+# métricas antes de la transformación
+cv_before <- sd(data_ts) / mean(data_ts) * 100
+sd_before <- sd(data_ts)
+iqr_before <- IQR(data_ts)
+
+# Aplicar la transformación logarítmica
+log_data_ts <- log(data_ts)
+
+# métricas después de la transformación
+cv_after <- sd(log_data_ts) / mean(log_data_ts) * 100
+sd_after <- sd(log_data_ts)
+iqr_after <- IQR(log_data_ts)
+
+# Crear con los resultados
+results <- data.frame(
+  Métrica = c("Coeficiente de Variación (CV)", "Desviación Estándar", "Rango Intercuartílico (IQR)"),
+  Antes_de_la_Transformación = c(cv_before, sd_before, iqr_before),
+  Después_de_la_Transformación = c(cv_after, sd_after, iqr_after)
+)
+
+# Imprimir 
+knitr::kable(results, caption = "Métricas antes y después de la transformación")
+
+
+
+```
+
+Antes de la transformación, el coeficiente de variación (CV) es 25.42, la desviación estándar es 8961.58 y el rango intercuartílico (IQR) es 17332.
+Después de la transformación, el CV se reduce significativamente a 2.29, la desviación estándar se reduce a 0.24 y el IQR se reduce a 0.47. Estas reducciones indican una disminución significativa en la variabilidad de la serie después de la transformación.
+ 
+
+
+
+## Justificación 
+ 
+ 
+1.  Prueba de Dickey-Fuller (ADF) estacionariedad :
+ 
+Es importante evaluar la estacionariedad de la serie temporal antes de aplicar modelos de series temporales. La prueba ADF nos permite determinar si la serie es estacionaria o no, lo que influye en la selección y aplicación de modelos adecuados.
+
+
+
+2. Diferenciación de la Serie Temporal:
+
+La diferenciación es un paso común para lograr la estacionariedad en series temporales no estacionarias. Eliminar tendencias y patrones no estacionarios permite aplicar modelos más simples y eficientes, adicionalmente mejorar la interpretabilidad de los resultados al eliminar tendencias y variaciones.
+
+3. la transformación:
+
+La transformación se utilizo para estabilizar la varianza y controlar la tendencia en la serie temporal. Esto es importante para mejorar la interpretacion de los datos y facilitar la identificación de patrones temporales. Además, la reducción de la variabilidad puede hacer que la serie sea más predecible y fácil de modela..
+
+
+

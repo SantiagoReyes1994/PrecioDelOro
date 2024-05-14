@@ -20,3 +20,17 @@ descomposición
 análisis-de-estacionalidad
 capítulo-3
 capítulo-4
+tab:unnamed-chunk-18
+propuesta-avance-2-3
+descomposición-de-la-serie-temporal
+análisis-de-diferenciación
+transformación-para-controlar-la-tendencia-y-variabilidad
+justificación
+avance-4
+método-de-holt-winters
+suavizamiento-exponencial
+pronóstico
+suavizamiento-exponencial-1
+visualización
+calculando-las-métricas-para-el-suavizamiento-exponencial
+calculando-las-métricas-para-el-método-de-holt-winters
