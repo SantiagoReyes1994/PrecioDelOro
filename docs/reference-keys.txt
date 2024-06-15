@@ -34,3 +34,4 @@ suavizamiento-exponencial-1
 visualización
 calculando-las-métricas-para-el-suavizamiento-exponencial
 calculando-las-métricas-para-el-método-de-holt-winters
+capítulo-4m-fn
