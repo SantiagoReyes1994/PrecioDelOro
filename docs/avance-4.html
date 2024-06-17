@@ -23,7 +23,7 @@
 <meta name="author" content="Grupo 2: Santiago Reyes, Francisco Santos, Fabian Maldonado" />
 
 
-<meta name="date" content="2024-06-15" />
+<meta name="date" content="2024-06-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="propuesta-avance-2-3.html"/>
-<link rel="next" href="capítulo-4m-fn.html"/>
+<link rel="next" href="avance-5.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -180,7 +180,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.4" data-path="avance-4.html"><a href="avance-4.html#visualización"><i class="fa fa-check"></i><b>3.4</b> Visualización:</a></li>
 <li class="chapter" data-level="3.5" data-path="avance-4.html"><a href="avance-4.html#calculando-las-métricas-para-el-suavizamiento-exponencial"><i class="fa fa-check"></i><b>3.5</b> Calculando las métricas para el suavizamiento exponencial</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="capítulo-4m-fn.html"><a href="capítulo-4m-fn.html"><i class="fa fa-check"></i><b>4</b> Capítulo 4m —fn</a></li>
+<li class="chapter" data-level="4" data-path="avance-5.html"><a href="avance-5.html"><i class="fa fa-check"></i><b>4</b> Avance 5</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -209,53 +209,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="suavizamiento-exponencial" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Suavizamiento Exponencial:<a href="avance-4.html#suavizamiento-exponencial" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Primero, aplicaremos el suavizamiento exponencial simple para suavizar la serie de tiempo y estimar los valores de nivel, tendencia y estacionalidad</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="avance-4.html#cb1-1" tabindex="-1"></a><span class="fu">library</span>(forecast)</span></code></pre></div>
-<pre><code>## Registered S3 method overwritten by &#39;quantmod&#39;:
-##   method            from
-##   as.zoo.data.frame zoo</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="avance-4.html#cb3-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb3-2"><a href="avance-4.html#cb3-2" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="avance-4.html#cb3-3" tabindex="-1"></a><span class="co"># Cargar los datos</span></span>
-<span id="cb3-4"><a href="avance-4.html#cb3-4" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;Gold Price.csv&quot;</span>)</span>
-<span id="cb3-5"><a href="avance-4.html#cb3-5" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="avance-4.html#cb3-6" tabindex="-1"></a><span class="co"># Convertir la columna &quot;Date&quot; en formato de fecha</span></span>
-<span id="cb3-7"><a href="avance-4.html#cb3-7" tabindex="-1"></a>data<span class="sc">$</span>Date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(data<span class="sc">$</span>Date)</span>
-<span id="cb3-8"><a href="avance-4.html#cb3-8" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="avance-4.html#cb3-9" tabindex="-1"></a><span class="co"># Crear la serie temporal</span></span>
-<span id="cb3-10"><a href="avance-4.html#cb3-10" tabindex="-1"></a>data_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(data<span class="sc">$</span>Price, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2015</span>, <span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">12</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="avance-4.html#cb4-1" tabindex="-1"></a>hw_model <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(data_ts)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="avance-4.html#cb30-1" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb30-2"><a href="avance-4.html#cb30-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb30-3"><a href="avance-4.html#cb30-3" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="avance-4.html#cb30-4" tabindex="-1"></a><span class="co"># Cargar los datos</span></span>
+<span id="cb30-5"><a href="avance-4.html#cb30-5" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;Gold Price.csv&quot;</span>)</span>
+<span id="cb30-6"><a href="avance-4.html#cb30-6" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="avance-4.html#cb30-7" tabindex="-1"></a><span class="co"># Convertir la columna &quot;Date&quot; en formato de fecha</span></span>
+<span id="cb30-8"><a href="avance-4.html#cb30-8" tabindex="-1"></a>data<span class="sc">$</span>Date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(data<span class="sc">$</span>Date)</span>
+<span id="cb30-9"><a href="avance-4.html#cb30-9" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="avance-4.html#cb30-10" tabindex="-1"></a><span class="co"># Crear la serie temporal</span></span>
+<span id="cb30-11"><a href="avance-4.html#cb30-11" tabindex="-1"></a>data_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(data<span class="sc">$</span>Price, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2015</span>, <span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">12</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="avance-4.html#cb31-1" tabindex="-1"></a>hw_model <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(data_ts)</span></code></pre></div>
 </div>
 <div id="pronóstico" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Pronóstico:<a href="avance-4.html#pronóstico" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Luego, utilizaremos el modelo Holt-Winters para hacer pronósticos futuros. en un 12 meses</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="avance-4.html#cb5-1" tabindex="-1"></a><span class="co"># Pronóstico</span></span>
-<span id="cb5-2"><a href="avance-4.html#cb5-2" tabindex="-1"></a>hw_forecast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(hw_model, <span class="at">h =</span> <span class="dv">12</span>)  <span class="co"># Pronosticar los próximos 12 meses</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="avance-4.html#cb32-1" tabindex="-1"></a><span class="co"># Pronóstico</span></span>
+<span id="cb32-2"><a href="avance-4.html#cb32-2" tabindex="-1"></a>hw_forecast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(hw_model, <span class="at">h =</span> <span class="dv">12</span>)  <span class="co"># Pronosticar los próximos 12 meses</span></span></code></pre></div>
 <div id="suavizamiento-exponencial-1" class="section level3 hasAnchor" number="3.3.1">
 <h3><span class="header-section-number">3.3.1</span> Suavizamiento Exponencial:<a href="avance-4.html#suavizamiento-exponencial-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Además, aplicaremos el suavizamiento exponencial simple para obtener una versión suavizada de la serie de tiempo.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="avance-4.html#cb6-1" tabindex="-1"></a>exp_smooth <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(data_ts, <span class="at">beta =</span> <span class="cn">FALSE</span>, <span class="at">gamma =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb6-2"><a href="avance-4.html#cb6-2" tabindex="-1"></a>smoothed_data <span class="ot">&lt;-</span> forecast<span class="sc">:::</span><span class="fu">forecast.HoltWinters</span>(exp_smooth, <span class="at">h =</span> <span class="fu">length</span>(data_ts))</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="avance-4.html#cb33-1" tabindex="-1"></a>exp_smooth <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(data_ts, <span class="at">beta =</span> <span class="cn">FALSE</span>, <span class="at">gamma =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb33-2"><a href="avance-4.html#cb33-2" tabindex="-1"></a>smoothed_data <span class="ot">&lt;-</span> forecast<span class="sc">:::</span><span class="fu">forecast.HoltWinters</span>(exp_smooth, <span class="at">h =</span> <span class="fu">length</span>(data_ts))</span></code></pre></div>
 </div>
 </div>
 <div id="visualización" class="section level2 hasAnchor" number="3.4">
 <h2><span class="header-section-number">3.4</span> Visualización:<a href="avance-4.html#visualización" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Finalmente, visualizaremos los resultados del método de Holt-Winters y del suavizamiento exponencial.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="avance-4.html#cb7-1" tabindex="-1"></a><span class="fu">autoplot</span>(hw_forecast) <span class="sc">+</span></span>
-<span id="cb7-2"><a href="avance-4.html#cb7-2" tabindex="-1"></a>  <span class="fu">autolayer</span>(data_ts, <span class="at">series =</span> <span class="st">&quot;Precio Oro&quot;</span>) <span class="sc">+</span></span>
-<span id="cb7-3"><a href="avance-4.html#cb7-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
-<span id="cb7-4"><a href="avance-4.html#cb7-4" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Pronóstico del Precio del Oro con Holt-Winters&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="avance-4.html#cb8-1" tabindex="-1"></a><span class="co"># Visualización de suavizamiento exponencial</span></span>
-<span id="cb8-2"><a href="avance-4.html#cb8-2" tabindex="-1"></a><span class="fu">autoplot</span>(smoothed_data) <span class="sc">+</span></span>
-<span id="cb8-3"><a href="avance-4.html#cb8-3" tabindex="-1"></a>  <span class="fu">autolayer</span>(data_ts, <span class="at">series =</span> <span class="st">&quot;Precio Oro&quot;</span>) <span class="sc">+</span></span>
-<span id="cb8-4"><a href="avance-4.html#cb8-4" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
-<span id="cb8-5"><a href="avance-4.html#cb8-5" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Suavizamiento Exponencial del Precio del Oro&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-5-2.png" width="672" />
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="avance-4.html#cb34-1" tabindex="-1"></a><span class="fu">autoplot</span>(hw_forecast) <span class="sc">+</span></span>
+<span id="cb34-2"><a href="avance-4.html#cb34-2" tabindex="-1"></a>  <span class="fu">autolayer</span>(data_ts, <span class="at">series =</span> <span class="st">&quot;Precio Oro&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-3"><a href="avance-4.html#cb34-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-4"><a href="avance-4.html#cb34-4" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Pronóstico del Precio del Oro con Holt-Winters&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="avance-4.html#cb35-1" tabindex="-1"></a><span class="co"># Visualización de suavizamiento exponencial</span></span>
+<span id="cb35-2"><a href="avance-4.html#cb35-2" tabindex="-1"></a><span class="fu">autoplot</span>(smoothed_data) <span class="sc">+</span></span>
+<span id="cb35-3"><a href="avance-4.html#cb35-3" tabindex="-1"></a>  <span class="fu">autolayer</span>(data_ts, <span class="at">series =</span> <span class="st">&quot;Precio Oro&quot;</span>) <span class="sc">+</span></span>
+<span id="cb35-4"><a href="avance-4.html#cb35-4" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
+<span id="cb35-5"><a href="avance-4.html#cb35-5" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Suavizamiento Exponencial del Precio del Oro&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-23-2.png" width="672" />
 ## Calculando las métricas para el método de Holt-Winters</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="avance-4.html#cb9-1" tabindex="-1"></a>hw_accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(hw_forecast)</span>
-<span id="cb9-2"><a href="avance-4.html#cb9-2" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Métricas para Holt-Winters:&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="avance-4.html#cb36-1" tabindex="-1"></a>hw_accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(hw_forecast)</span>
+<span id="cb36-2"><a href="avance-4.html#cb36-2" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Métricas para Holt-Winters:&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] &quot;Métricas para Holt-Winters:&quot;</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="avance-4.html#cb11-1" tabindex="-1"></a><span class="fu">print</span>(hw_accuracy)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="avance-4.html#cb38-1" tabindex="-1"></a><span class="fu">print</span>(hw_accuracy)</span></code></pre></div>
 <pre><code>##                     ME     RMSE      MAE         MPE      MAPE      MASE
 ## Training set -4.547451 330.3763 226.7895 -0.02156372 0.6362722 0.2941997
 ##                    ACF1
@@ -263,10 +260,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="calculando-las-métricas-para-el-suavizamiento-exponencial" class="section level2 hasAnchor" number="3.5">
 <h2><span class="header-section-number">3.5</span> Calculando las métricas para el suavizamiento exponencial<a href="avance-4.html#calculando-las-métricas-para-el-suavizamiento-exponencial" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="avance-4.html#cb13-1" tabindex="-1"></a>smoothed_accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(smoothed_data)</span>
-<span id="cb13-2"><a href="avance-4.html#cb13-2" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Métricas para Suavizamiento Exponencial:&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="avance-4.html#cb40-1" tabindex="-1"></a>smoothed_accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(smoothed_data)</span>
+<span id="cb40-2"><a href="avance-4.html#cb40-2" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Métricas para Suavizamiento Exponencial:&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] &quot;Métricas para Suavizamiento Exponencial:&quot;</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="avance-4.html#cb15-1" tabindex="-1"></a><span class="fu">print</span>(smoothed_accuracy)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="avance-4.html#cb42-1" tabindex="-1"></a><span class="fu">print</span>(smoothed_accuracy)</span></code></pre></div>
 <pre><code>##                    ME     RMSE      MAE        MPE      MAPE      MASE
 ## Training set 10.41807 322.2341 217.4095 0.02246437 0.6065303 0.2820317
 ##                      ACF1
@@ -289,7 +286,7 @@ los resultados sugieren que el suavizamiento exponencial tiene un mejor desempe�
         </div>
       </div>
 <a href="propuesta-avance-2-3.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="capítulo-4m-fn.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="avance-5.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

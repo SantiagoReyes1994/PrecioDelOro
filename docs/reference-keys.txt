@@ -1,3 +1,4 @@
+tab:unnamed-chunk-18
 data-set-seleccionado
 nombre-daily-gold-price-2014-2022-time-series-en-kaggle
 descripción
@@ -10,19 +11,14 @@ análisis-de-tendencias
 modelos-de-predicción
 investigación-académica
 granularidad-diaria
-propuesta-avance-2
+propuesta-avance-2-3
 cargar-librerias-a-usar
 cargar-la-data-del-data-set
 limpieza-de-datos
 padding-imputation
 exploración-de-la-data
-descomposición
-análisis-de-estacionalidad
-capítulo-3
-capítulo-4
-tab:unnamed-chunk-18
-propuesta-avance-2-3
 descomposición-de-la-serie-temporal
+análisis-de-estacionalidad
 análisis-de-diferenciación
 transformación-para-controlar-la-tendencia-y-variabilidad
 justificación
@@ -33,5 +29,4 @@ pronóstico
 suavizamiento-exponencial-1
 visualización
 calculando-las-métricas-para-el-suavizamiento-exponencial
-calculando-las-métricas-para-el-método-de-holt-winters
-capítulo-4m-fn
+avance-5
