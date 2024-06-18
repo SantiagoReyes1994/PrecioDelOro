@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Capítulo 3 Avance 4 | Precio Del Oro</title>
-  <meta name="description" content="Capítulo 3 Avance 4 | Precio Del Oro" />
+  <title>Capítulo 4 Avance 5 ARIMA | Precio Del Oro</title>
+  <meta name="description" content="Capítulo 4 Avance 5 ARIMA | Precio Del Oro" />
   <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Capítulo 3 Avance 4 | Precio Del Oro" />
+  <meta property="og:title" content="Capítulo 4 Avance 5 ARIMA | Precio Del Oro" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Capítulo 3 Avance 4 | Precio Del Oro" />
+  <meta name="twitter:title" content="Capítulo 4 Avance 5 ARIMA | Precio Del Oro" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="propuesta-avance-2-3.html"/>
-<link rel="next" href="avance-5-arima.html"/>
+<link rel="prev" href="avance-4.html"/>
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -208,84 +208,79 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="avance-4" class="section level1 hasAnchor" number="3">
-<h1><span class="header-section-number">Capítulo 3</span> Avance 4<a href="avance-4.html#avance-4" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="método-de-holt-winters" class="section level2 hasAnchor" number="3.1">
-<h2><span class="header-section-number">3.1</span> Método de Holt-Winters:<a href="avance-4.html#método-de-holt-winters" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>El método de Holt-Winters es una técnica de suavizado exponencial que se utiliza comúnmente para pronosticar datos de series de tiempo. Se compone de tres componentes: nivel, tendencia y estacionalidad.</p>
+<div id="avance-5-arima" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Capítulo 4</span> Avance 5 ARIMA<a href="avance-5-arima.html#avance-5-arima" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Como alternativa, haremos el modelo ARIMA. ARIMA es una integración de 2 métodos, AR (Auto Regresión) y MM (Media Móvil). Queremos el método ARIMA teniendo en cuenta nuestros datos de estacionalidad, por lo que usaremos STLM con el método ARIMA.</p>
+<p>Dividiremos nuestros datos en entrenamiento y testeo. Tenemos datos de 2014 - 2021 e intentaremos pronosticar el precio de los últimos 6 meses.</p>
+<p>6 meses = 7 * 4 * 6 = 168</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="avance-5-arima.html#cb42-1" tabindex="-1"></a><span class="co"># Data de entrenamiento</span></span>
+<span id="cb42-2"><a href="avance-5-arima.html#cb42-2" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">head</span>(data_ts, <span class="sc">-</span><span class="dv">168</span>)</span>
+<span id="cb42-3"><a href="avance-5-arima.html#cb42-3" tabindex="-1"></a><span class="co"># Data de Test</span></span>
+<span id="cb42-4"><a href="avance-5-arima.html#cb42-4" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">tail</span>(data_ts, <span class="dv">168</span>)</span>
+<span id="cb42-5"><a href="avance-5-arima.html#cb42-5" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="avance-5-arima.html#cb42-6" tabindex="-1"></a>gold_arima_stl <span class="ot">&lt;-</span> <span class="fu">stlm</span>(<span class="at">y =</span> train, <span class="at">method =</span> <span class="st">&quot;arima&quot;</span>)</span>
+<span id="cb42-7"><a href="avance-5-arima.html#cb42-7" tabindex="-1"></a>gold_arima_stl<span class="sc">$</span>model</span></code></pre></div>
+<pre><code>## Series: x 
+## ARIMA(2,1,2) 
+## 
+## Coefficients:
+##          ar1      ar2      ma1     ma2
+##       0.1980  -0.3136  -0.2090  0.4049
+## s.e.  0.2254   0.2368   0.2169  0.2295
+## 
+## sigma^2 = 76562:  log likelihood = -14490.16
+## AIC=28990.33   AICc=28990.36   BIC=29018.47</code></pre>
+<div id="pronóstico-con-modelo-arima" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Pronóstico Con Modelo Arima<a href="avance-5-arima.html#pronóstico-con-modelo-arima" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Después de hacer el modelo, intentaremos pronosticar usando nuestros datos de prueba y visualizarlo.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="avance-5-arima.html#cb44-1" tabindex="-1"></a><span class="co"># Pronóstico</span></span>
+<span id="cb44-2"><a href="avance-5-arima.html#cb44-2" tabindex="-1"></a>gold_ARIMAforecast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(gold_arima_stl, <span class="at">h =</span> <span class="dv">168</span>)</span>
+<span id="cb44-3"><a href="avance-5-arima.html#cb44-3" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="avance-5-arima.html#cb44-4" tabindex="-1"></a><span class="co"># Visualización</span></span>
+<span id="cb44-5"><a href="avance-5-arima.html#cb44-5" tabindex="-1"></a>data_ts <span class="sc">%&gt;%</span> </span>
+<span id="cb44-6"><a href="avance-5-arima.html#cb44-6" tabindex="-1"></a>  <span class="fu">autoplot</span>() <span class="sc">+</span></span>
+<span id="cb44-7"><a href="avance-5-arima.html#cb44-7" tabindex="-1"></a>  <span class="fu">autolayer</span>(gold_arima_stl<span class="sc">$</span>fitted, <span class="at">lwd =</span> <span class="fl">0.5</span>, </span>
+<span id="cb44-8"><a href="avance-5-arima.html#cb44-8" tabindex="-1"></a>            <span class="at">series =</span> <span class="st">&quot;ARIMA model&quot;</span>) <span class="sc">+</span></span>
+<span id="cb44-9"><a href="avance-5-arima.html#cb44-9" tabindex="-1"></a>  <span class="fu">autolayer</span>(gold_ARIMAforecast<span class="sc">$</span>mean, <span class="at">lwd =</span> <span class="fl">0.5</span>,</span>
+<span id="cb44-10"><a href="avance-5-arima.html#cb44-10" tabindex="-1"></a>            <span class="at">series =</span> <span class="st">&quot;Forecast 1 year&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p>En el gráfico podemos ver que la línea roja (modelo ARIMA) con los datos de entrenamiento es bastante similar a nuestros datos originales. Desafortunadamente, la línea azul (Pronóstico) todavía tiene una desviación de los datos originales. Comprobaremos nuestro error con MAPE</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="avance-5-arima.html#cb45-1" tabindex="-1"></a><span class="fu">MAPE</span>(gold_arima_stl<span class="sc">$</span>fitted, train)<span class="sc">*</span><span class="dv">100</span></span></code></pre></div>
+<pre><code>## [1] 0.5561707</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="avance-5-arima.html#cb47-1" tabindex="-1"></a><span class="fu">MAPE</span>(gold_ARIMAforecast<span class="sc">$</span>mean, test)<span class="sc">*</span><span class="dv">100</span></span></code></pre></div>
+<pre><code>## [1] 4.483968</code></pre>
+<p>El error del modelo Arima es de 0.5561707%, y el error del pronóstico es 4.483968%.</p>
 </div>
-<div id="suavizamiento-exponencial" class="section level2 hasAnchor" number="3.2">
-<h2><span class="header-section-number">3.2</span> Suavizamiento Exponencial:<a href="avance-4.html#suavizamiento-exponencial" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Primero, aplicaremos el suavizamiento exponencial simple para suavizar la serie de tiempo y estimar los valores de nivel, tendencia y estacionalidad</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="avance-4.html#cb28-1" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
-<span id="cb28-2"><a href="avance-4.html#cb28-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb28-3"><a href="avance-4.html#cb28-3" tabindex="-1"></a></span>
-<span id="cb28-4"><a href="avance-4.html#cb28-4" tabindex="-1"></a><span class="co"># Cargar los datos</span></span>
-<span id="cb28-5"><a href="avance-4.html#cb28-5" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;Gold Price.csv&quot;</span>)</span>
-<span id="cb28-6"><a href="avance-4.html#cb28-6" tabindex="-1"></a></span>
-<span id="cb28-7"><a href="avance-4.html#cb28-7" tabindex="-1"></a><span class="co"># Convertir la columna &quot;Date&quot; en formato de fecha</span></span>
-<span id="cb28-8"><a href="avance-4.html#cb28-8" tabindex="-1"></a>data<span class="sc">$</span>Date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(data<span class="sc">$</span>Date)</span>
-<span id="cb28-9"><a href="avance-4.html#cb28-9" tabindex="-1"></a></span>
-<span id="cb28-10"><a href="avance-4.html#cb28-10" tabindex="-1"></a><span class="co"># Crear la serie temporal</span></span>
-<span id="cb28-11"><a href="avance-4.html#cb28-11" tabindex="-1"></a>data_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(data<span class="sc">$</span>Price, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2015</span>, <span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">12</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="avance-4.html#cb29-1" tabindex="-1"></a>hw_model <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(data_ts)</span></code></pre></div>
+<div id="evaluación-del-modelo" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Evaluación del Modelo<a href="avance-5-arima.html#evaluación-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Después de hacer la predicción, evaluaremos nuestra modelo ARIMA con verificación de suposiciones.</p>
+<div id="no-autocorrelación" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> No Autocorrelación<a href="avance-5-arima.html#no-autocorrelación" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>H0: no tiene autocorrelación</p>
+<p>H1: tiene autocorrelación</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="avance-5-arima.html#cb49-1" tabindex="-1"></a><span class="co"># ARIMA Model</span></span>
+<span id="cb49-2"><a href="avance-5-arima.html#cb49-2" tabindex="-1"></a><span class="fu">Box.test</span>(gold_arima_stl<span class="sc">$</span>residuals, <span class="at">type =</span> <span class="st">&quot;Ljung-Box&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##  Box-Ljung test
+## 
+## data:  gold_arima_stl$residuals
+## X-squared = 0.0055182, df = 1, p-value = 0.9408</code></pre>
+<p>p-value = 0.94 &gt; 0.05 (No correlación)</p>
 </div>
-<div id="pronóstico" class="section level2 hasAnchor" number="3.3">
-<h2><span class="header-section-number">3.3</span> Pronóstico:<a href="avance-4.html#pronóstico" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Luego, utilizaremos el modelo Holt-Winters para hacer pronósticos futuros. en un 12 meses</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="avance-4.html#cb30-1" tabindex="-1"></a><span class="co"># Pronóstico</span></span>
-<span id="cb30-2"><a href="avance-4.html#cb30-2" tabindex="-1"></a>hw_forecast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(hw_model, <span class="at">h =</span> <span class="dv">12</span>)  <span class="co"># Pronosticar los próximos 12 meses</span></span></code></pre></div>
-<div id="suavizamiento-exponencial-1" class="section level3 hasAnchor" number="3.3.1">
-<h3><span class="header-section-number">3.3.1</span> Suavizamiento Exponencial:<a href="avance-4.html#suavizamiento-exponencial-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Además, aplicaremos el suavizamiento exponencial simple para obtener una versión suavizada de la serie de tiempo.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="avance-4.html#cb31-1" tabindex="-1"></a>exp_smooth <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(data_ts, <span class="at">beta =</span> <span class="cn">FALSE</span>, <span class="at">gamma =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb31-2"><a href="avance-4.html#cb31-2" tabindex="-1"></a>smoothed_data <span class="ot">&lt;-</span> forecast<span class="sc">:::</span><span class="fu">forecast.HoltWinters</span>(exp_smooth, <span class="at">h =</span> <span class="fu">length</span>(data_ts))</span></code></pre></div>
-</div>
-</div>
-<div id="visualización" class="section level2 hasAnchor" number="3.4">
-<h2><span class="header-section-number">3.4</span> Visualización:<a href="avance-4.html#visualización" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Finalmente, visualizaremos los resultados del método de Holt-Winters y del suavizamiento exponencial.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="avance-4.html#cb32-1" tabindex="-1"></a><span class="fu">autoplot</span>(hw_forecast) <span class="sc">+</span></span>
-<span id="cb32-2"><a href="avance-4.html#cb32-2" tabindex="-1"></a>  <span class="fu">autolayer</span>(data_ts, <span class="at">series =</span> <span class="st">&quot;Precio Oro&quot;</span>) <span class="sc">+</span></span>
-<span id="cb32-3"><a href="avance-4.html#cb32-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
-<span id="cb32-4"><a href="avance-4.html#cb32-4" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Pronóstico del Precio del Oro con Holt-Winters&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="avance-4.html#cb33-1" tabindex="-1"></a><span class="co"># Visualización de suavizamiento exponencial</span></span>
-<span id="cb33-2"><a href="avance-4.html#cb33-2" tabindex="-1"></a><span class="fu">autoplot</span>(smoothed_data) <span class="sc">+</span></span>
-<span id="cb33-3"><a href="avance-4.html#cb33-3" tabindex="-1"></a>  <span class="fu">autolayer</span>(data_ts, <span class="at">series =</span> <span class="st">&quot;Precio Oro&quot;</span>) <span class="sc">+</span></span>
-<span id="cb33-4"><a href="avance-4.html#cb33-4" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
-<span id="cb33-5"><a href="avance-4.html#cb33-5" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Suavizamiento Exponencial del Precio del Oro&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-23-2.png" width="672" />
-## Calculando las métricas para el método de Holt-Winters</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="avance-4.html#cb34-1" tabindex="-1"></a>hw_accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(hw_forecast)</span>
-<span id="cb34-2"><a href="avance-4.html#cb34-2" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Métricas para Holt-Winters:&quot;</span>)</span></code></pre></div>
-<pre><code>## [1] &quot;Métricas para Holt-Winters:&quot;</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="avance-4.html#cb36-1" tabindex="-1"></a><span class="fu">print</span>(hw_accuracy)</span></code></pre></div>
-<pre><code>##                     ME     RMSE      MAE         MPE      MAPE      MASE
-## Training set -4.547451 330.3763 226.7895 -0.02156372 0.6362722 0.2941997
-##                    ACF1
-## Training set 0.02910049</code></pre>
-</div>
-<div id="calculando-las-métricas-para-el-suavizamiento-exponencial" class="section level2 hasAnchor" number="3.5">
-<h2><span class="header-section-number">3.5</span> Calculando las métricas para el suavizamiento exponencial<a href="avance-4.html#calculando-las-métricas-para-el-suavizamiento-exponencial" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="avance-4.html#cb38-1" tabindex="-1"></a>smoothed_accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(smoothed_data)</span>
-<span id="cb38-2"><a href="avance-4.html#cb38-2" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Métricas para Suavizamiento Exponencial:&quot;</span>)</span></code></pre></div>
-<pre><code>## [1] &quot;Métricas para Suavizamiento Exponencial:&quot;</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="avance-4.html#cb40-1" tabindex="-1"></a><span class="fu">print</span>(smoothed_accuracy)</span></code></pre></div>
-<pre><code>##                    ME     RMSE      MAE        MPE      MAPE      MASE
-## Training set 10.41807 322.2341 217.4095 0.02246437 0.6065303 0.2820317
-##                      ACF1
-## Training set -0.002075383</code></pre>
-<p>Los resultados de las métricas proporcionan una comparación entre el método de Holt-Winters y el suavizamiento exponencial en términos de su desempeño en la serie temporal de precios del oro.</p>
-<p>• ME (Error Medio): Ambos métodos tienen errores medios cercanos a cero, lo que indica que en promedio no están sesgados en sus pronósticos.</p>
-<p>• RMSE (Error Cuadrático Medio): El suavizamiento exponencial tiene un RMSE ligeramente más bajo (271.2025) en comparación con Holt-Winters (308.2692). Un RMSE más bajo indica que el suavizamiento exponencial tiene un mejor ajuste a los datos de entrenamiento.</p>
-<p>• MAE (Error Absoluto Medio): Similar al RMSE, el suavizamiento exponencial también tiene un MAE más bajo (155.8932) en comparación con Holt-Winters (195.5094). Esto indica que, en promedio, las predicciones del suavizamiento exponencial tienden a desviarse menos de los valores reales que las predicciones de Holt-Winters.</p>
-<p>• MPE (Error Porcentual Medio): Ambos métodos tienen valores de MPE cercanos a cero, lo que indica que, en promedio, no hay un sesgo significativo en los pronósticos.</p>
-<p>• MAPE (Error Porcentual Absoluto Medio): El suavizamiento exponencial tiene un MAPE ligeramente más bajo (0.4349868) en comparación con Holt-Winters (0.5384692). Un MAPE más bajo indica que el suavizamiento exponencial tiene una precisión porcentualmente mejor en sus predicciones.</p>
-<p>• MASE (Error Medio Absoluto Escalado): Similar al MAE, el suavizamiento exponencial tiene un MASE más bajo (0.04096972) en comparación con Holt-Winters (0.05138109). Un MASE más bajo indica que el suavizamiento exponencial tiene una mejor capacidad relativa para predecir la serie temporal en comparación con un método de referencia (generalmente el promedio histórico).</p>
-<p>• ACF1 (Autocorrelación de Primer Orden de los Residuos): Ambos métodos muestran valores de autocorrelación cercanos a cero, lo que indica que los residuos no exhiben una autocorrelación significativa.
-los resultados sugieren que el suavizamiento exponencial tiene un mejor desempeño en términos de precisión y ajuste a los datos de entrenamiento en comparación con el método de Holt-Winters para esta serie temporal.</p>
+<div id="normalidad" class="section level3 hasAnchor" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Normalidad<a href="avance-5-arima.html#normalidad" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>H0: Normalmente distribuido</p>
+<p>H1: No se sigue una distribución normal</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="avance-5-arima.html#cb51-1" tabindex="-1"></a><span class="fu">shapiro.test</span>(gold_arima_stl<span class="sc">$</span>residuals)</span></code></pre></div>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  gold_arima_stl$residuals
+## W = 0.93835, p-value &lt; 2.2e-16</code></pre>
+<p>El p-value &lt; 0,05 (no se distribuye normalmente).</p>
+<p>Nuestro modelo falla en la verificación de la normalidad</p>
 
+</div>
 </div>
 </div>
             </section>
@@ -293,8 +288,8 @@ los resultados sugieren que el suavizamiento exponencial tiene un mejor desempe�
           </div>
         </div>
       </div>
-<a href="propuesta-avance-2-3.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="avance-5-arima.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="avance-4.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -325,7 +320,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/SantiagoReyes1994/PrecioDelOro/edit/main/Capitulo-3.Rmd",
+"link": "https://github.com/SantiagoReyes1994/PrecioDelOro/edit/main/Capitulo-4.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -333,7 +328,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/SantiagoReyes1994/PrecioDelOro/blob/main/Capitulo-3.Rmd",
+"link": "https://github.com/SantiagoReyes1994/PrecioDelOro/blob/main/Capitulo-4.Rmd",
 "text": null
 },
 "download": null,

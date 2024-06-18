@@ -1,2 +1,73 @@
-# Avance 5
-Esta es una prueba para cargar el avance 5
+# Avance 5 ARIMA
+
+Como alternativa, haremos el modelo ARIMA. ARIMA es una integración de 2 métodos, AR (Auto Regresión) y MM (Media Móvil). Queremos el método ARIMA teniendo en cuenta nuestros datos de estacionalidad, por lo que usaremos STLM con el método ARIMA.
+
+Dividiremos nuestros datos en entrenamiento y testeo. Tenemos datos de 2014 - 2021 e intentaremos pronosticar el precio de los últimos 6 meses.
+
+6 meses = 7 * 4 * 6 = 168
+
+```{r}
+# Data de entrenamiento
+train <- head(data_ts, -168)
+# Data de Test
+test <- tail(data_ts, 168)
+
+gold_arima_stl <- stlm(y = train, method = "arima")
+gold_arima_stl$model
+```
+## Pronóstico Con Modelo Arima
+
+Después de hacer el modelo, intentaremos pronosticar usando nuestros datos de prueba y visualizarlo.
+
+```{r}
+# Pronóstico
+gold_ARIMAforecast <- forecast(gold_arima_stl, h = 168)
+
+# Visualización
+data_ts %>% 
+  autoplot() +
+  autolayer(gold_arima_stl$fitted, lwd = 0.5, 
+            series = "ARIMA model") +
+  autolayer(gold_ARIMAforecast$mean, lwd = 0.5,
+            series = "Forecast 1 year")
+```
+
+En el gráfico podemos ver que la línea roja (modelo ARIMA) con los datos de entrenamiento es bastante similar a nuestros datos originales. Desafortunadamente, la línea azul (Pronóstico) todavía tiene una desviación de los datos originales. Comprobaremos nuestro error con MAPE
+
+```{r}
+MAPE(gold_arima_stl$fitted, train)*100
+```
+```{r}
+MAPE(gold_ARIMAforecast$mean, test)*100
+```
+El error del modelo Arima es de 0.5561707%, y el error del pronóstico es 4.483968%.
+
+
+## Evaluación del Modelo
+
+Después de hacer la predicción, evaluaremos nuestra modelo ARIMA con verificación de suposiciones.
+
+### No Autocorrelación
+
+H0: no tiene autocorrelación
+
+H1: tiene autocorrelación
+
+```{r}
+# ARIMA Model
+Box.test(gold_arima_stl$residuals, type = "Ljung-Box")
+```
+p-value = 0.94 > 0.05 (No correlación)
+
+### Normalidad
+
+H0: Normalmente distribuido
+
+H1: No se sigue una distribución normal
+
+```{r}
+shapiro.test(gold_arima_stl$residuals)
+```
+El p-value < 0,05 (no se distribuye normalmente).
+
+Nuestro modelo falla en la verificación de la normalidad

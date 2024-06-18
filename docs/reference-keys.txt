@@ -29,4 +29,8 @@ pronóstico
 suavizamiento-exponencial-1
 visualización
 calculando-las-métricas-para-el-suavizamiento-exponencial
-avance-5
+avance-5-arima
+pronóstico-con-modelo-arima
+evaluación-del-modelo
+no-autocorrelación
+normalidad
