@@ -23,7 +23,7 @@
 <meta name="author" content="Grupo 2: Santiago Reyes, Francisco Santos, Fabian Maldonado" />
 
 
-<meta name="date" content="2024-06-16" />
+<meta name="date" content="2024-06-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -180,7 +180,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.4" data-path="avance-4.html"><a href="avance-4.html#visualización"><i class="fa fa-check"></i><b>3.4</b> Visualización:</a></li>
 <li class="chapter" data-level="3.5" data-path="avance-4.html"><a href="avance-4.html#calculando-las-métricas-para-el-suavizamiento-exponencial"><i class="fa fa-check"></i><b>3.5</b> Calculando las métricas para el suavizamiento exponencial</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="capítulo-4m-fn.html"><a href="capítulo-4m-fn.html"><i class="fa fa-check"></i><b>4</b> Capítulo 4m —fn–</a></li>
+<li class="chapter" data-level="4" data-path="avance-5-arima.html"><a href="avance-5-arima.html"><i class="fa fa-check"></i><b>4</b> Avance 5 ARIMA</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="avance-5-arima.html"><a href="avance-5-arima.html#pronóstico-con-modelo-arima"><i class="fa fa-check"></i><b>4.1</b> Pronóstico Con Modelo Arima</a></li>
+<li class="chapter" data-level="4.2" data-path="avance-5-arima.html"><a href="avance-5-arima.html#evaluación-del-modelo"><i class="fa fa-check"></i><b>4.2</b> Evaluación del Modelo</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="avance-5-arima.html"><a href="avance-5-arima.html#no-autocorrelación"><i class="fa fa-check"></i><b>4.2.1</b> No Autocorrelación</a></li>
+<li class="chapter" data-level="4.2.2" data-path="avance-5-arima.html"><a href="avance-5-arima.html#normalidad"><i class="fa fa-check"></i><b>4.2.2</b> Normalidad</a></li>
+</ul></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -294,7 +302,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb17-2"><a href="propuesta-avance-2-3.html#cb17-2" tabindex="-1"></a>data_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="at">data =</span> data_clean<span class="sc">$</span>Price, <span class="at">start =</span> <span class="dv">2014</span>, <span class="at">frequency =</span> <span class="dv">7</span><span class="sc">*</span><span class="dv">4</span><span class="sc">*</span><span class="dv">12</span>)</span>
 <span id="cb17-3"><a href="propuesta-avance-2-3.html#cb17-3" tabindex="-1"></a>data_ts <span class="sc">%&gt;%</span> </span>
 <span id="cb17-4"><a href="propuesta-avance-2-3.html#cb17-4" tabindex="-1"></a><span class="fu">autoplot</span>()</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-37-1.png" width="672" />
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-18-1.png" width="672" />
 Se observa un comportamiento INCREMENTAL a traves del tiempo y adicionalmente se podria inferir un modelo multiplicativo</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="propuesta-avance-2-3.html#cb18-1" tabindex="-1"></a>  <span class="co"># Calcular el promedio móvil</span></span>
 <span id="cb18-2"><a href="propuesta-avance-2-3.html#cb18-2" tabindex="-1"></a>  promedio_movil <span class="ot">&lt;-</span> <span class="fu">ma</span>(data_ts, <span class="at">order =</span> <span class="dv">12</span>)  </span>
@@ -302,7 +310,7 @@ Se observa un comportamiento INCREMENTAL a traves del tiempo y adicionalmente se
 <span id="cb18-4"><a href="propuesta-avance-2-3.html#cb18-4" tabindex="-1"></a>    <span class="fu">autolayer</span>(promedio_movil, <span class="at">series =</span> <span class="st">&quot;Promedio Móvil&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 12 rows containing missing values or values outside the scale range
 ## (`geom_line()`).</code></pre>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <p>Se observa que el promedio móvil sigue de cerca la serie temporal, lo que sugiere una presencia limitada de ruido en los datos y una tendencia clara en su evolución.</p>
 </div>
 <div id="descomposición-de-la-serie-temporal" class="section level2 hasAnchor" number="2.6">
@@ -313,21 +321,21 @@ Se observa un comportamiento INCREMENTAL a traves del tiempo y adicionalmente se
 <span id="cb20-3"><a href="propuesta-avance-2-3.html#cb20-3" tabindex="-1"></a>  </span>
 <span id="cb20-4"><a href="propuesta-avance-2-3.html#cb20-4" tabindex="-1"></a>data_decompose <span class="sc">%&gt;%</span> </span>
 <span id="cb20-5"><a href="propuesta-avance-2-3.html#cb20-5" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p>Se evidencia claramente una tendencia lineal en los datos, acompañada de un patrón de estacionalidad adicional.</p>
 </div>
 <div id="análisis-de-estacionalidad" class="section level2 hasAnchor" number="2.7">
 <h2><span class="header-section-number">2.7</span> Análisis de estacionalidad<a href="propuesta-avance-2-3.html#análisis-de-estacionalidad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="propuesta-avance-2-3.html#cb21-1" tabindex="-1"></a>data_decompose<span class="sc">$</span>seasonal <span class="sc">%&gt;%</span> </span>
 <span id="cb21-2"><a href="propuesta-avance-2-3.html#cb21-2" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p>Después de la visualización del componente estacional de la serie temporal, se procederá a analizar y validar un posible patrón en los precios del oro entre los años 2014 y 2023. Este análisis ayudará a comprender mejor la naturaleza de la estacionalidad presente en los datos a lo largo de este período</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="propuesta-avance-2-3.html#cb22-1" tabindex="-1"></a><span class="fu">ggseasonplot</span>(data_ts, <span class="at">year.labels =</span> <span class="cn">TRUE</span>, <span class="at">year.labels.left =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
 <span id="cb22-2"><a href="propuesta-avance-2-3.html#cb22-2" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Gráfico Estacional de Precios del Oro (Múltiples Años)&quot;</span>, </span>
 <span id="cb22-3"><a href="propuesta-avance-2-3.html#cb22-3" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Mes&quot;</span>, </span>
 <span id="cb22-4"><a href="propuesta-avance-2-3.html#cb22-4" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
 <span id="cb22-5"><a href="propuesta-avance-2-3.html#cb22-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <p>Se observa un patrón recurrente en los precios, con picos y valles que parecen repetirse cada año. Se identifica una trendencia incremental constante del periodo 2019 al 2022 principalmente</p>
 <p>Alicamos La prueba de Dickey-Fuller Aumentada (ADF) para determinar si una serie temporal es estacionaria o no.</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="propuesta-avance-2-3.html#cb23-1" tabindex="-1"></a><span class="fu">suppressMessages</span>({</span>
@@ -358,7 +366,7 @@ Se observa un comportamiento INCREMENTAL a traves del tiempo y adicionalmente se
 <span id="cb25-6"><a href="propuesta-avance-2-3.html#cb25-6" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(Month, total)) <span class="sc">+</span></span>
 <span id="cb25-7"><a href="propuesta-avance-2-3.html#cb25-7" tabindex="-1"></a>  <span class="fu">geom_col</span>()<span class="sc">+</span></span>
 <span id="cb25-8"><a href="propuesta-avance-2-3.html#cb25-8" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-43-1.png" width="672" />
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-24-1.png" width="672" />
 El análisis de la estacionalidad mensual revela patrones en los precios del oro a lo largo del año. Se observa que estos son más altos durante enero a julio, mientras que disminuyen de agosto a diciembre</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="propuesta-avance-2-3.html#cb26-1" tabindex="-1"></a><span class="co"># Diferenciación de la serie temporal</span></span>
 <span id="cb26-2"><a href="propuesta-avance-2-3.html#cb26-2" tabindex="-1"></a>diff_data_ts <span class="ot">&lt;-</span> <span class="fu">diff</span>(data_ts)</span>
@@ -367,7 +375,7 @@ El análisis de la estacionalidad mensual revela patrones en los precios del oro
 <span id="cb26-5"><a href="propuesta-avance-2-3.html#cb26-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Serie Diferenciada&quot;</span>, </span>
 <span id="cb26-6"><a href="propuesta-avance-2-3.html#cb26-6" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Diferencia&quot;</span>, </span>
 <span id="cb26-7"><a href="propuesta-avance-2-3.html#cb26-7" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Tiempo&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <p>Con este grafico observamos parecen más amplias entre sí durante el año 2020 y 2021, lo que indica cambios significativos en el comportamiento de la serie durante ese año</p>
 <p>Continuamos el análisis al representar tanto la serie temporal original como la serie diferenciada en un único gráfico.</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="propuesta-avance-2-3.html#cb27-1" tabindex="-1"></a><span class="co"># Diferenciación de la serie temporal</span></span>
@@ -377,14 +385,14 @@ El análisis de la estacionalidad mensual revela patrones en los precios del oro
 <span id="cb27-5"><a href="propuesta-avance-2-3.html#cb27-5" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
 <span id="cb27-6"><a href="propuesta-avance-2-3.html#cb27-6" tabindex="-1"></a><span class="fu">plot</span>(data_ts, <span class="at">main=</span><span class="st">&quot;Serie Original&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Valor&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Tiempo&quot;</span>)</span>
 <span id="cb27-7"><a href="propuesta-avance-2-3.html#cb27-7" tabindex="-1"></a><span class="fu">plot</span>(diff_data_ts, <span class="at">main=</span><span class="st">&quot;Serie Diferenciada&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Diferencia&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Tiempo&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-45-1.png" width="672" />
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-26-1.png" width="672" />
 Esto nos permite comparar visualmente cómo cambian los datos después de aplicar la diferenciación.</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="propuesta-avance-2-3.html#cb28-1" tabindex="-1"></a><span class="co"># Calcular la función de autocorrelación (ACF)</span></span>
 <span id="cb28-2"><a href="propuesta-avance-2-3.html#cb28-2" tabindex="-1"></a>acf_diff <span class="ot">&lt;-</span> <span class="fu">acf</span>(diff_data_ts, <span class="at">main =</span> <span class="st">&quot;Función de Autocorrelación (ACF) de la Serie Diferenciada&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="propuesta-avance-2-3.html#cb29-1" tabindex="-1"></a><span class="co"># Calcular la función de autocorrelación parcial (PACF)</span></span>
 <span id="cb29-2"><a href="propuesta-avance-2-3.html#cb29-2" tabindex="-1"></a>pacf_diff <span class="ot">&lt;-</span> <span class="fu">pacf</span>(diff_data_ts, <span class="at">main =</span> <span class="st">&quot;Función de Autocorrelación Parcial (PACF) de la Serie Diferenciada&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-46-2.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-27-2.png" width="672" /></p>
 <p>Los coeficientes de correlación fuera de estos límites son estadísticamente significativos. el limigte superio es de :0.0349826 y el inferior de: -0.0349826</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="propuesta-avance-2-3.html#cb30-1" tabindex="-1"></a><span class="fu">suppressMessages</span>({</span>
 <span id="cb30-2"><a href="propuesta-avance-2-3.html#cb30-2" tabindex="-1"></a></span>
@@ -409,7 +417,7 @@ Esto nos permite comparar visualmente cómo cambian los datos después de aplica
 <span id="cb33-3"><a href="propuesta-avance-2-3.html#cb33-3" tabindex="-1"></a></span>
 <span id="cb33-4"><a href="propuesta-avance-2-3.html#cb33-4" tabindex="-1"></a><span class="co"># Gráfico de la serie transformada</span></span>
 <span id="cb33-5"><a href="propuesta-avance-2-3.html#cb33-5" tabindex="-1"></a><span class="fu">plot</span>(log_data_ts, <span class="at">main=</span><span class="st">&quot;Serie Transformada (Logarítmica)&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Valor Transformado&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Tiempo&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="propuesta-avance-2-3.html#cb34-1" tabindex="-1"></a><span class="co"># Cargar el paquete knitr</span></span>
 <span id="cb34-2"><a href="propuesta-avance-2-3.html#cb34-2" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code></pre></div>
 <pre><code>## Warning: package &#39;knitr&#39; was built under R version 4.3.2</code></pre>
@@ -436,7 +444,7 @@ Esto nos permite comparar visualmente cómo cambian los datos después de aplica
 <span id="cb36-21"><a href="propuesta-avance-2-3.html#cb36-21" tabindex="-1"></a><span class="co"># Imprimir </span></span>
 <span id="cb36-22"><a href="propuesta-avance-2-3.html#cb36-22" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(results, <span class="at">caption =</span> <span class="st">&quot;Métricas antes y después de la transformación&quot;</span>)</span></code></pre></div>
 <table>
-<caption><span id="tab:unnamed-chunk-49">Table 2.1: </span>Métricas antes y después de la transformación</caption>
+<caption><span id="tab:unnamed-chunk-30">Table 2.1: </span>Métricas antes y después de la transformación</caption>
 <colgroup>
 <col width="34%" />
 <col width="31%" />

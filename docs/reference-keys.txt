@@ -1,4 +1,4 @@
-tab:unnamed-chunk-49
+tab:unnamed-chunk-30
 data-set-seleccionado
 nombre-daily-gold-price-2014-2022-time-series-en-kaggle
 descripción
@@ -29,4 +29,8 @@ pronóstico
 suavizamiento-exponencial-1
 visualización
 calculando-las-métricas-para-el-suavizamiento-exponencial
-capítulo-4m-fn
+avance-5-arima
+pronóstico-con-modelo-arima
+evaluación-del-modelo
+no-autocorrelación
+normalidad

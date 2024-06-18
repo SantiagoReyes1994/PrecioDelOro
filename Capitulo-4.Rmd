@@ -1,1 +1,212 @@
-# Capítulo 4m ---fn--
+# Avance 5 ARIMA
+
+Como alternativa, haremos el modelo ARIMA. ARIMA es una integración de 2 métodos, AR (Auto Regresión) y MM (Media Móvil). Queremos el método ARIMA teniendo en cuenta nuestros datos de estacionalidad, por lo que usaremos STLM con el método ARIMA.
+
+Dividiremos nuestros datos en entrenamiento y testeo. Tenemos datos de 2014 - 2021 e intentaremos pronosticar el precio de los últimos 6 meses.
+
+6 meses = 7 * 4 * 6 = 168
+
+```{r}
+# Data de entrenamiento
+train <- head(data_ts, -168)
+# Data de Test
+test <- tail(data_ts, 168)
+
+gold_arima_stl <- stlm(y = train, method = "arima")
+gold_arima_stl$model
+```
+## Pronóstico Con Modelo Arima
+
+Después de hacer el modelo, intentaremos pronosticar usando nuestros datos de prueba y visualizarlo.
+
+```{r}
+# Pronóstico
+gold_ARIMAforecast <- forecast(gold_arima_stl, h = 168)
+
+# Visualización
+data_ts %>% 
+  autoplot() +
+  autolayer(gold_arima_stl$fitted, lwd = 0.5, 
+            series = "ARIMA model") +
+  autolayer(gold_ARIMAforecast$mean, lwd = 0.5,
+            series = "Forecast 1 year")
+```
+
+En el gráfico podemos ver que la línea roja (modelo ARIMA) con los datos de entrenamiento es bastante similar a nuestros datos originales. Desafortunadamente, la línea azul (Pronóstico) todavía tiene una desviación de los datos originales. Comprobaremos nuestro error con MAPE
+
+```{r}
+MAPE(gold_arima_stl$fitted, train)*100
+```
+```{r}
+MAPE(gold_ARIMAforecast$mean, test)*100
+```
+El error del modelo Arima es de 0.5561707%, y el error del pronóstico es 4.483968%.
+
+
+## Evaluación del Modelo
+
+Después de hacer la predicción, evaluaremos nuestra modelo ARIMA con verificación de suposiciones.
+
+### No Autocorrelación
+
+H0: no tiene autocorrelación
+
+H1: tiene autocorrelación
+
+```{r}
+# ARIMA Model
+Box.test(gold_arima_stl$residuals, type = "Ljung-Box")
+```
+p-value = 0.94 > 0.05 (No correlación)
+
+### Normalidad
+
+H0: Normalmente distribuido
+
+H1: No se sigue una distribución normal
+
+```{r}
+shapiro.test(gold_arima_stl$residuals)
+```
+El p-value < 0,05 (no se distribuye normalmente).
+
+Nuestro modelo falla en la verificación de la normalidad
+
+ Avance 7: Facebook Prophet
+
+El modelo Facebook Prophet es una herramienta de código abierto desarrollada por Facebook para el análisis y pronóstico de series temporales. 
+
+Primero cargamos la data.
+
+```{r}
+library(forecast)
+library(ggplot2)
+
+# Cargar los datos
+data <- read.csv("Gold Price.csv")
+
+```
+
+Ahora nos aseguramos de instalar y cargar el paquete de prophet.
+
+
+```{r}
+install.packages("prophet")
+library(prophet)
+
+
+```
+
+Procedemos a preparar los datos. Para esto, verificamos el formato de la columna date.
+
+```{r}
+data$Date <- as.Date(data$Date)
+
+```
+
+Ahora procedemos a renombrar las columnas Date y proce dado que prophet los requiere bajo un formato específco. 
+
+```{r}
+
+df_prophet <- data.frame(ds = data$Date, y = data$Price)
+m <- prophet(df_prophet)
+
+```
+Veamos la serie de tiempo original. 
+
+
+```{r}
+library(ggplot2)
+
+# Suponiendo que `data` es tu dataframe original con las series de tiempo
+ggplot(data, aes(x = Date, y = Price)) +
+  geom_line() +
+  labs(x = "Fecha", y = "Precio", title = "Serie de Tiempo Original")
+
+```
+
+veamos como prophet se ajusta y predice sobre los valores originales
+
+
+```{r}
+library(prophet)
+
+
+m <- prophet(df_prophet)
+
+future <- make_future_dataframe(m, periods = 365)
+forecast <- predict(m, future)
+
+```
+```{r}
+
+plot_data <- merge(df_prophet, forecast[, c("ds", "yhat", "yhat_lower", "yhat_upper")], by = "ds", all = TRUE)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Graficar serie de tiempo original y predicciones
+ggplot(plot_data, aes(x = ds)) +
+  geom_line(aes(y = y, color = "Original")) +  
+  geom_line(aes(y = yhat, color = "Predicción")) +
+  labs(x = "Fecha", y = "Precio", title = "Serie de Tiempo Original con Predicciones de Prophet") +
+  scale_color_manual(values = c("Original" = "blue", "Predicción" = "red")) +
+  theme_minimal()
+
+```
+
+En general, es claro que el prophet predice bastante bien sobre los valores reales, no obstante procedemos a calcular métricas de precisión
+
+```{r}
+
+mae <- mean(abs(forecast$yhat - df_prophet$y))
+
+
+rmse <- sqrt(mean((forecast$yhat - df_prophet$y)^2))
+
+
+mape <- mean(abs((df_prophet$y - forecast$yhat) / df_prophet$y)) * 100
+
+
+cat("MAE:", mae, "\n")
+cat("RMSE:", rmse, "\n")
+cat("MAPE:", mape, "%\n")
+
+```
+MAPE de aproximadamente 13.69306 % indica que las predicciones del modelo Prophet tienen un error absoluto promedio del 13.69306 % respecto a los valores reales. Es una medida relativa que proporciona una perspectiva sobre la magnitud del error en relación con el tamaño de los valores reales. En conclusión el modelo presenta una precisión "decente"
+
+
+Una vez ajustado y evaluado el prophet podemos proceder a realizar una predicción sobre 12 años.
+
+
+```{r}
+future <- make_future_dataframe(m, periods = 12 * 12, freq = "month")
+forecast <- predict(m, future)
+
+```
+
+
+```{r}
+plot(m, forecast)
+
+
+```
+
+```{r}
+predicted_values <- forecast$yhat
+
+# Calcular MAE, RMSE y MAPE
+mae <- mean(abs(predicted_values - df_prophet$y))
+rmse <- sqrt(mean((predicted_values - df_prophet$y)^2))
+mape <- mean(abs((df_prophet$y - predicted_values) / df_prophet$y)) * 100
+
+# Imprimir métricas
+cat("MAE:", mae, "\n")
+cat("RMSE:", rmse, "\n")
+cat("MAPE:", mape, "%\n")
+
+```
+
+En general la predicción presenta métricas "buenas" podemos ver que este algoritmo es fácil de usar y permite generar rápidamente predicciones que difieren de la típica regresión lineal estándar. Además es especialmente diseñada para predecir sobre intervalos temporales lo cual le da un valor agregado. Las predicciones, presentan un MAPE inferior a 14% en general lo cual podría ser considerado un "éxito".

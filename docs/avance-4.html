@@ -23,7 +23,7 @@
 <meta name="author" content="Grupo 2: Santiago Reyes, Francisco Santos, Fabian Maldonado" />
 
 
-<meta name="date" content="2024-06-16" />
+<meta name="date" content="2024-06-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="propuesta-avance-2-3.html"/>
-<link rel="next" href="capítulo-4m-fn.html"/>
+<link rel="next" href="avance-5-arima.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -180,7 +180,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.4" data-path="avance-4.html"><a href="avance-4.html#visualización"><i class="fa fa-check"></i><b>3.4</b> Visualización:</a></li>
 <li class="chapter" data-level="3.5" data-path="avance-4.html"><a href="avance-4.html#calculando-las-métricas-para-el-suavizamiento-exponencial"><i class="fa fa-check"></i><b>3.5</b> Calculando las métricas para el suavizamiento exponencial</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="capítulo-4m-fn.html"><a href="capítulo-4m-fn.html"><i class="fa fa-check"></i><b>4</b> Capítulo 4m —fn–</a></li>
+<li class="chapter" data-level="4" data-path="avance-5-arima.html"><a href="avance-5-arima.html"><i class="fa fa-check"></i><b>4</b> Avance 5 ARIMA</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="avance-5-arima.html"><a href="avance-5-arima.html#pronóstico-con-modelo-arima"><i class="fa fa-check"></i><b>4.1</b> Pronóstico Con Modelo Arima</a></li>
+<li class="chapter" data-level="4.2" data-path="avance-5-arima.html"><a href="avance-5-arima.html#evaluación-del-modelo"><i class="fa fa-check"></i><b>4.2</b> Evaluación del Modelo</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="avance-5-arima.html"><a href="avance-5-arima.html#no-autocorrelación"><i class="fa fa-check"></i><b>4.2.1</b> No Autocorrelación</a></li>
+<li class="chapter" data-level="4.2.2" data-path="avance-5-arima.html"><a href="avance-5-arima.html#normalidad"><i class="fa fa-check"></i><b>4.2.2</b> Normalidad</a></li>
+</ul></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -241,13 +249,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb41-2"><a href="avance-4.html#cb41-2" tabindex="-1"></a>  <span class="fu">autolayer</span>(data_ts, <span class="at">series =</span> <span class="st">&quot;Precio Oro&quot;</span>) <span class="sc">+</span></span>
 <span id="cb41-3"><a href="avance-4.html#cb41-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
 <span id="cb41-4"><a href="avance-4.html#cb41-4" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Pronóstico del Precio del Oro con Holt-Winters&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="avance-4.html#cb42-1" tabindex="-1"></a><span class="co"># Visualización de suavizamiento exponencial</span></span>
 <span id="cb42-2"><a href="avance-4.html#cb42-2" tabindex="-1"></a><span class="fu">autoplot</span>(smoothed_data) <span class="sc">+</span></span>
 <span id="cb42-3"><a href="avance-4.html#cb42-3" tabindex="-1"></a>  <span class="fu">autolayer</span>(data_ts, <span class="at">series =</span> <span class="st">&quot;Precio Oro&quot;</span>) <span class="sc">+</span></span>
 <span id="cb42-4"><a href="avance-4.html#cb42-4" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
 <span id="cb42-5"><a href="avance-4.html#cb42-5" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Suavizamiento Exponencial del Precio del Oro&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-54-2.png" width="672" />
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-35-2.png" width="672" />
 ## Calculando las métricas para el método de Holt-Winters</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="avance-4.html#cb43-1" tabindex="-1"></a>hw_accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(hw_forecast)</span>
 <span id="cb43-2"><a href="avance-4.html#cb43-2" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Métricas para Holt-Winters:&quot;</span>)</span></code></pre></div>
@@ -273,6 +281,99 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>• MASE (Error Medio Absoluto Escalado): Similar al MAE, el suavizamiento exponencial tiene un MASE más bajo (0.04096972) en comparación con Holt-Winters (0.05138109). Un MASE más bajo indica que el suavizamiento exponencial tiene una mejor capacidad relativa para predecir la serie temporal en comparación con un método de referencia (generalmente el promedio histórico).</p>
 <p>• ACF1 (Autocorrelación de Primer Orden de los Residuos): Ambos métodos muestran valores de autocorrelación cercanos a cero, lo que indica que los residuos no exhiben una autocorrelación significativa.
 los resultados sugieren que el suavizamiento exponencial tiene un mejor desempeño en términos de precisión y ajuste a los datos de entrenamiento en comparación con el método de Holt-Winters para esta serie temporal.</p>
+<p>Avance 7: Facebook Prophet</p>
+<p>El modelo Facebook Prophet es una herramienta de código abierto desarrollada por Facebook para el análisis y pronóstico de series temporales.</p>
+<p>Primero cargamos la data.</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="avance-4.html#cb51-1" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb51-2"><a href="avance-4.html#cb51-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb51-3"><a href="avance-4.html#cb51-3" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="avance-4.html#cb51-4" tabindex="-1"></a><span class="co"># Cargar los datos</span></span>
+<span id="cb51-5"><a href="avance-4.html#cb51-5" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;Gold Price.csv&quot;</span>)</span></code></pre></div>
+<p>Ahora nos aseguramos de instalar y cargar el paquete de prophet.</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="avance-4.html#cb52-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;prophet&quot;</span>)</span></code></pre></div>
+<pre><code>## Error in install.packages : Updating loaded packages</code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="avance-4.html#cb54-1" tabindex="-1"></a><span class="fu">library</span>(prophet)</span></code></pre></div>
+<p>Procedemos a preparar los datos. Para esto, verificamos el formato de la columna date.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="avance-4.html#cb55-1" tabindex="-1"></a>data<span class="sc">$</span>Date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(data<span class="sc">$</span>Date)</span></code></pre></div>
+<p>Ahora procedemos a renombrar las columnas Date y proce dado que prophet los requiere bajo un formato específco.</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="avance-4.html#cb56-1" tabindex="-1"></a>df_prophet <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ds =</span> data<span class="sc">$</span>Date, <span class="at">y =</span> data<span class="sc">$</span>Price)</span>
+<span id="cb56-2"><a href="avance-4.html#cb56-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">prophet</span>(df_prophet)</span></code></pre></div>
+<pre><code>## Disabling daily seasonality. Run prophet with daily.seasonality=TRUE to override this.</code></pre>
+<p>Veamos la serie de tiempo original.</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="avance-4.html#cb58-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb58-2"><a href="avance-4.html#cb58-2" tabindex="-1"></a></span>
+<span id="cb58-3"><a href="avance-4.html#cb58-3" tabindex="-1"></a><span class="co"># Suponiendo que `data` es tu dataframe original con las series de tiempo</span></span>
+<span id="cb58-4"><a href="avance-4.html#cb58-4" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> Date, <span class="at">y =</span> Price)) <span class="sc">+</span></span>
+<span id="cb58-5"><a href="avance-4.html#cb58-5" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb58-6"><a href="avance-4.html#cb58-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Precio&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Serie de Tiempo Original&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-42-1.png" width="672" />
+veamos como prophet se ajusta y predice sobre los valores originales</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="avance-4.html#cb59-1" tabindex="-1"></a><span class="fu">library</span>(prophet)</span>
+<span id="cb59-2"><a href="avance-4.html#cb59-2" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="avance-4.html#cb59-3" tabindex="-1"></a></span>
+<span id="cb59-4"><a href="avance-4.html#cb59-4" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">prophet</span>(df_prophet)</span></code></pre></div>
+<pre><code>## Disabling daily seasonality. Run prophet with daily.seasonality=TRUE to override this.</code></pre>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="avance-4.html#cb61-1" tabindex="-1"></a>future <span class="ot">&lt;-</span> <span class="fu">make_future_dataframe</span>(m, <span class="at">periods =</span> <span class="dv">365</span>)</span>
+<span id="cb61-2"><a href="avance-4.html#cb61-2" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> <span class="fu">predict</span>(m, future)</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="avance-4.html#cb62-1" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(df_prophet, forecast[, <span class="fu">c</span>(<span class="st">&quot;ds&quot;</span>, <span class="st">&quot;yhat&quot;</span>, <span class="st">&quot;yhat_lower&quot;</span>, <span class="st">&quot;yhat_upper&quot;</span>)], <span class="at">by =</span> <span class="st">&quot;ds&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="avance-4.html#cb63-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb63-2"><a href="avance-4.html#cb63-2" tabindex="-1"></a></span>
+<span id="cb63-3"><a href="avance-4.html#cb63-3" tabindex="-1"></a><span class="co"># Graficar serie de tiempo original y predicciones</span></span>
+<span id="cb63-4"><a href="avance-4.html#cb63-4" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> ds)) <span class="sc">+</span></span>
+<span id="cb63-5"><a href="avance-4.html#cb63-5" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> y, <span class="at">color =</span> <span class="st">&quot;Original&quot;</span>)) <span class="sc">+</span>  </span>
+<span id="cb63-6"><a href="avance-4.html#cb63-6" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> yhat, <span class="at">color =</span> <span class="st">&quot;Predicción&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb63-7"><a href="avance-4.html#cb63-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Precio&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Serie de Tiempo Original con Predicciones de Prophet&quot;</span>) <span class="sc">+</span></span>
+<span id="cb63-8"><a href="avance-4.html#cb63-8" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Original&quot;</span> <span class="ot">=</span> <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;Predicción&quot;</span> <span class="ot">=</span> <span class="st">&quot;red&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb63-9"><a href="avance-4.html#cb63-9" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<pre><code>## Warning: Removed 365 rows containing missing values or values outside the scale range
+## (`geom_line()`).</code></pre>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-45-1.png" width="672" />
+En general, es claro que el prophet predice bastante bien sobre los valores reales, no obstante procedemos a calcular métricas de precisión</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="avance-4.html#cb65-1" tabindex="-1"></a>mae <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(forecast<span class="sc">$</span>yhat <span class="sc">-</span> df_prophet<span class="sc">$</span>y))</span></code></pre></div>
+<pre><code>## Warning in forecast$yhat - df_prophet$y: longer object length is not a multiple of shorter
+## object length</code></pre>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="avance-4.html#cb67-1" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((forecast<span class="sc">$</span>yhat <span class="sc">-</span> df_prophet<span class="sc">$</span>y)<span class="sc">^</span><span class="dv">2</span>))</span></code></pre></div>
+<pre><code>## Warning in forecast$yhat - df_prophet$y: longer object length is not a multiple of shorter
+## object length</code></pre>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="avance-4.html#cb69-1" tabindex="-1"></a>mape <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>((df_prophet<span class="sc">$</span>y <span class="sc">-</span> forecast<span class="sc">$</span>yhat) <span class="sc">/</span> df_prophet<span class="sc">$</span>y)) <span class="sc">*</span> <span class="dv">100</span></span></code></pre></div>
+<pre><code>## Warning in df_prophet$y - forecast$yhat: longer object length is not a multiple of shorter
+## object length</code></pre>
+<pre><code>## Warning in (df_prophet$y - forecast$yhat)/df_prophet$y: longer object length is not a multiple
+## of shorter object length</code></pre>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="avance-4.html#cb72-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;MAE:&quot;</span>, mae, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## MAE: 3956.107</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="avance-4.html#cb74-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;RMSE:&quot;</span>, rmse, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## RMSE: 8746.385</code></pre>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="avance-4.html#cb76-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;MAPE:&quot;</span>, mape, <span class="st">&quot;%</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## MAPE: 13.69306 %</code></pre>
+<p>MAPE de aproximadamente 13.69306 % indica que las predicciones del modelo Prophet tienen un error absoluto promedio del 13.69306 % respecto a los valores reales. Es una medida relativa que proporciona una perspectiva sobre la magnitud del error en relación con el tamaño de los valores reales. En conclusión el modelo presenta una precisión “decente”</p>
+<p>Una vez ajustado y evaluado el prophet podemos proceder a realizar una predicción sobre 12 años.</p>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="avance-4.html#cb78-1" tabindex="-1"></a>future <span class="ot">&lt;-</span> <span class="fu">make_future_dataframe</span>(m, <span class="at">periods =</span> <span class="dv">12</span> <span class="sc">*</span> <span class="dv">12</span>, <span class="at">freq =</span> <span class="st">&quot;month&quot;</span>)</span>
+<span id="cb78-2"><a href="avance-4.html#cb78-2" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> <span class="fu">predict</span>(m, future)</span></code></pre></div>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="avance-4.html#cb79-1" tabindex="-1"></a><span class="fu">plot</span>(m, forecast)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="avance-4.html#cb80-1" tabindex="-1"></a>predicted_values <span class="ot">&lt;-</span> forecast<span class="sc">$</span>yhat</span>
+<span id="cb80-2"><a href="avance-4.html#cb80-2" tabindex="-1"></a></span>
+<span id="cb80-3"><a href="avance-4.html#cb80-3" tabindex="-1"></a><span class="co"># Calcular MAE, RMSE y MAPE</span></span>
+<span id="cb80-4"><a href="avance-4.html#cb80-4" tabindex="-1"></a>mae <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(predicted_values <span class="sc">-</span> df_prophet<span class="sc">$</span>y))</span></code></pre></div>
+<pre><code>## Warning in predicted_values - df_prophet$y: longer object length is not a multiple of shorter
+## object length</code></pre>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="avance-4.html#cb82-1" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((predicted_values <span class="sc">-</span> df_prophet<span class="sc">$</span>y)<span class="sc">^</span><span class="dv">2</span>))</span></code></pre></div>
+<pre><code>## Warning in predicted_values - df_prophet$y: longer object length is not a multiple of shorter
+## object length</code></pre>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="avance-4.html#cb84-1" tabindex="-1"></a>mape <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>((df_prophet<span class="sc">$</span>y <span class="sc">-</span> predicted_values) <span class="sc">/</span> df_prophet<span class="sc">$</span>y)) <span class="sc">*</span> <span class="dv">100</span></span></code></pre></div>
+<pre><code>## Warning in df_prophet$y - predicted_values: longer object length is not a multiple of shorter
+## object length</code></pre>
+<pre><code>## Warning in (df_prophet$y - predicted_values)/df_prophet$y: longer object length is not a
+## multiple of shorter object length</code></pre>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="avance-4.html#cb87-1" tabindex="-1"></a><span class="co"># Imprimir métricas</span></span>
+<span id="cb87-2"><a href="avance-4.html#cb87-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;MAE:&quot;</span>, mae, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## MAE: 2566.707</code></pre>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="avance-4.html#cb89-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;RMSE:&quot;</span>, rmse, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## RMSE: 7500.98</code></pre>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="avance-4.html#cb91-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;MAPE:&quot;</span>, mape, <span class="st">&quot;%</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## MAPE: 8.330445 %</code></pre>
+<p>En general la predicción presenta métricas “buenas” podemos ver que este algoritmo es fácil de usar y permite generar rápidamente predicciones que difieren de la típica regresión lineal estándar. Además es especialmente diseñada para predecir sobre intervalos temporales lo cual le da un valor agregado. Las predicciones, presentan un MAPE inferior a 14&gt;% en general lo cual podría ser considerado un “éxito”.</p>
 
 </div>
 </div>
@@ -282,7 +383,7 @@ los resultados sugieren que el suavizamiento exponencial tiene un mejor desempe�
         </div>
       </div>
 <a href="propuesta-avance-2-3.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="capítulo-4m-fn.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="avance-5-arima.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
