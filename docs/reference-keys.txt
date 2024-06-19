@@ -1,4 +1,4 @@
-tab:unnamed-chunk-30
+tab:unnamed-chunk-18
 data-set-seleccionado
 nombre-daily-gold-price-2014-2022-time-series-en-kaggle
 descripción
@@ -34,3 +34,8 @@ pronóstico-con-modelo-arima
 evaluación-del-modelo
 no-autocorrelación
 normalidad
+avance-6-facebook-prophet
+cargue-de-data.
+intalación-y-cargue-del-paquete-prophet.
+preparación-de-datos.
+conclusión
