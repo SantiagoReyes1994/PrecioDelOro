@@ -1,0 +1,1239 @@
+--- 
+title: "Precio Del Oro"
+author: "Grupo 2: Santiago Reyes, Francisco Santos, Fabian Maldonado"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+
+# DATA SET SELECCIONADO
+## NOMBRE: Daily Gold Price (2014-2022) Time Series en Kaggle
+
+## DESCRIPCIÓN:
+Conjunto de datos proporciona los precios diarios del oro desde 2015 hasta 2021. Cada entrada incluye la fecha y el precio del oro en dólares estadounidenses (USD).
+
+## RANGO DE FECHAS:01/01/2014-05/08/2022
+
+## REGISTROS: 2.227
+
+## VARIABLES:
+Este Dataset contiene las siguientes variables:  
+
+•	**Fecha (Date)**: Representa la fecha en la que se registró el precio del oro. Por ejemplo, “24 de abril de 2015”.  
+
+•	**Precio del oro (Price)**: Indica el valor del oro en dólares estadounidenses (USD) para esa fecha específica. Por ejemplo, “1,200 USD”.  
+
+•	**Precio de apertura (Open)**: Corresponde al precio del oro al inicio del período de negociación. Por ejemplo, “1,180 USD”.  
+
+•	**Precio máximo (High)**: Es el precio más alto alcanzado por el oro durante el día. Por ejemplo, “1,220 USD”.  
+
+•	**Precio mínimo (Low)**: Representa el precio más bajo registrado para el oro durante el día. Por ejemplo, “1,150 USD”.  
+
+•	**Volumen (Volume)**: Indica la cantidad total de oro negociada en ese día. Por ejemplo, “10,000 onzas”.  
+
+•	**Variación porcentual (Chg%)**: Muestra el cambio porcentual en el precio del oro con respecto al día anterior. Por ejemplo, “+2.5%” o “-1.8%”.  
+
+
+
+## IMPORTANCIA:
+### **Relevancia económica**: 
+El oro ha sido una parte integral de la economía mundial durante milenios y sigue siendo relevante en la economía contemporánea por varias razones: El oro ha sido considerado tradicionalmente como una reserva de valor estable. A lo largo de la historia, ha conservado su valor mejor que muchas otras formas de inversión, lo que lo convierte en un refugio seguro en tiempos de incertidumbre económica, Los inversores y los bancos centrales a menudo mantienen oro como parte de una cartera diversificada. Dado que el oro tiene una correlación baja o negativa con otros activos. Además de su valor como inversión, el oro tiene numerosos usos industriales y tecnológicos. Se utiliza en la electrónica, la odontología, la medicina entre otros campos.  
+
+
+### **Análisis de tendencias**: 
+Estudiar la serie temporal de precios del oro permite identificar cambios en el sentimiento económico y la confianza del mercado. Por ejemplo, un aumento en el precio del oro a menudo indica preocupaciones sobre la inflación, la inestabilidad geopolítica o la incertidumbre económica, Para los inversionistas, el oro puede servir como una forma de diversificar sus carteras y mitigar el riesgo. Estudiar las fluctuaciones en su precio les permite ajustar sus asignaciones de activos según las condiciones del mercado. Históricamente ha demostrado ser un activo que puede actuar como cobertura contra la inflación. Los bancos, en particular, pueden estudiar las fluctuaciones en el precio del oro para informar sus decisiones de política monetaria y de inversión. Las reservas de oro de un banco central pueden influir en su política monetaria y en su capacidad para estabilizar la moneda nacional. Por último, : Los movimientos extremos en el precio del oro a menudo pueden indicar riesgos sistémicos en la economía o en los mercados financieros.  
+
+### **Modelos de predicción**: 
+Utilizando estos datos, se pueden construir modelos de predicción para estimar los precios futuros del oro y cambios importantes.  Se pueden aplicar modelos como: 
+
+•	***Modelos ARIMA (Autoregressive Integrated Moving Average):*** Son adecuados para series temporales estacionarias y pueden capturar tanto la autocorrelación como la estacionalidad en los datos.  
+
+•	***Suavizado exponencial:*** Modelo es útil para suavizar las fluctuaciones en los datos y capturar tendencias a largo plazo. Es especialmente útil cuando los datos tienen una tendencia y/o estacionalidad que cambia con el tiempo.  
+
+•	***Redes Neuronales Recurrentes (RNN) y Redes Neuronales Convolucionales (CNN):*** Estos modelos son capaces de capturar patrones complejos en los datos y pueden adaptarse a una amplia variedad de situaciones.  
+
+•	***Modelos de regresión:*** Son útiles para analizar la relación entre la serie temporal de interés y otras variables predictoras.  
+
+•	***Modelos de media móvil generalizada (GARCH):*** Son útiles para modelar la volatilidad en series temporales financieras.  
+
+
+### **Investigación académica**: 
+Los datos históricos del oro son útiles para investigaciones académicas en campos como la economía, las finanzas y la econometría.
+
+### **Granularidad diaria**: 
+El tener información tan detallada del comportamiento diario es valioso para tener datos solidos y de gran confiabilidad.
+
+<!--chapter:end:index.Rmd-->
+
+# Propuesta Avance 2 & 3 
+
+## Cargar Librerias a usar
+```{r}
+suppressMessages({
+
+library(lubridate) 
+library(forecast) 
+library(MLmetrics) 
+library(tseries) 
+library(TSstudio) 
+library(padr) 
+library(imputeTS)
+library(ggplot2)
+library(tidyverse)
+theme_set(theme_minimal())
+
+})
+```
+## Cargar la data del Data set
+```{r}
+data = read.csv("Gold Price.csv")
+head(data)
+```
+## Limpieza de Datos
+```{r}
+# Validar los tipos de datos de cada Columna
+str(data)
+```
+ Se ajusta la columna "Date" está en tipo "character", por lo tanto toca convertir esta en formato de Tiempo
+
+```{r}
+data <- data %>% 
+  mutate(Date = ymd(Date))
+
+str(data)
+```
+Se identifica que Todas las columnas se encuentran en el tipo correcto. 
+
+## Padding & imputation
+
+Si observamos la data solo comprende fechas entre semana, pero en series de tiempo deberíamos tener la data mas completa en la medida de lo posible.
+```{r}
+# Padding
+data <- data %>% 
+  pad(interval = "day") 
+
+
+suppressWarnings({
+  # Imputar NA values con la última observación
+  data_clean <- data %>% na.locf()
+})
+
+head(data_clean)
+```
+## Exploración de la data
+
+Para explorar la data debemos primero crear el objeto de serie de tiempo
+```{r}
+# ts
+data_ts <- ts(data = data_clean$Price, start = 2014, frequency = 7*4*12)
+data_ts %>% 
+autoplot()
+```
+Se observa un comportamiento INCREMENTAL a traves del tiempo y adicionalmente se podria inferir un modelo multiplicativo
+
+```{r}
+
+
+
+  # Calcular el promedio móvil
+  promedio_movil <- ma(data_ts, order = 12)  
+  autoplot(data_ts) + ggtitle("Serie de Tiempo") +
+    autolayer(promedio_movil, series = "Promedio Móvil")
+
+
+
+
+
+
+```
+
+
+Se observa que el promedio móvil sigue de cerca la serie temporal, lo que sugiere una presencia limitada de ruido en los datos y una tendencia clara en su evolución.
+
+## Descomposición de la Serie Temporal
+
+Se realiza la descomposición de la serie temporal en sus componentes de tendencia, estacionalidad y residuos  
+
+```{r}
+data_decompose <- data_ts %>% 
+  decompose(type = "multiplicative")
+  
+data_decompose %>% 
+  autoplot()
+```
+
+
+Se evidencia claramente una tendencia lineal en los datos, acompañada de un patrón de estacionalidad adicional.
+
+
+
+## Análisis de estacionalidad
+
+```{r}
+data_decompose$seasonal %>% 
+  autoplot()
+```
+
+Después de la visualización del componente estacional de la serie temporal, se procederá a analizar y validar un posible patrón en los precios del oro entre los años 2014 y 2023. Este análisis ayudará a comprender mejor la naturaleza de la estacionalidad presente en los datos a lo largo de este período
+
+```{r}
+ggseasonplot(data_ts, year.labels = TRUE, year.labels.left = TRUE) +
+  labs(title = "Gráfico Estacional de Precios del Oro (Múltiples Años)", 
+       x = "Mes", 
+       y = "Precio") +
+  theme_minimal()
+
+
+```
+
+Se observa un patrón recurrente en los precios, con picos y valles que parecen repetirse cada año. Se identifica una trendencia incremental constante del periodo 2019 al 2022  principalmente 
+
+
+Alicamos La prueba de Dickey-Fuller Aumentada (ADF) para determinar si una serie temporal es estacionaria o no.
+```{r}
+
+
+suppressMessages({
+
+# Prueba de estacionariedad (ADF)
+adf_test <- adf.test(data_ts)
+adf_test
+
+
+})
+
+
+
+```
+La prueba de Dickey-Fuller aumentada (ADF) identifica  que la serie temporal no es estacionaria. Esto se basa en el estadístico de prueba (-2.1155) y el valor p (0.5294). Dado que el valor p es mayor que el nivel de significancia típico de 0.05, no hay suficiente evidencia para rechazar la hipótesis nula de no estacionariedad.
+
+Dado que la serie no es estacionaria según la prueba ADF, Proceedemos con la diferenciación 
+
+
+## Análisis de Diferenciación
+
+
+
+Se realiza un analisis  comparativo de los meses  identificando el comportamiento
+
+```{r}
+data_clean %>% 
+  mutate(Month = month(Date, label = T)) %>% 
+  mutate(seasons = data_decompose$seasonal) %>% 
+  group_by(Month) %>% 
+  summarise(total = sum(seasons)) %>%   
+  ggplot(aes(Month, total)) +
+  geom_col()+
+  theme_minimal()
+```
+El análisis de la estacionalidad mensual revela patrones en los precios del oro a lo largo del año. Se observa que estos son más altos durante  enero a julio, mientras que disminuyen de agosto a diciembre 
+
+
+```{r}
+# Diferenciación de la serie temporal
+diff_data_ts <- diff(data_ts)
+
+autoplot(diff_data_ts) + 
+  labs(title = "Serie Diferenciada", 
+       y = "Diferencia", 
+       x = "Tiempo")
+
+```
+
+Con este grafico observamos parecen más amplias  entre sí durante el año 2020 y 2021, lo que indica cambios significativos en el comportamiento de la serie durante ese año
+
+
+
+Continuamos el análisis al representar tanto la serie temporal original como la serie diferenciada en un único gráfico.
+
+
+```{r}
+# Diferenciación de la serie temporal
+diff_data_ts <- diff(data_ts)
+
+
+par(mfrow=c(2,1))
+plot(data_ts, main="Serie Original", ylab="Valor", xlab="Tiempo")
+plot(diff_data_ts, main="Serie Diferenciada", ylab="Diferencia", xlab="Tiempo")
+
+```
+Esto nos permite comparar visualmente cómo cambian los datos después de aplicar la diferenciación.
+
+
+```{r}
+# Calcular la función de autocorrelación (ACF)
+acf_diff <- acf(diff_data_ts, main = "Función de Autocorrelación (ACF) de la Serie Diferenciada")
+
+# Calcular la función de autocorrelación parcial (PACF)
+pacf_diff <- pacf(diff_data_ts, main = "Función de Autocorrelación Parcial (PACF) de la Serie Diferenciada")
+
+```
+
+
+ Los coeficientes de correlación fuera de estos límites son estadísticamente significativos. el limigte superio es de :0.0349826 y el inferior de: -0.0349826
+
+
+```{r}
+
+suppressMessages({
+
+# Prueba ADF en la serie diferenciada
+adf_test_diff <- adf.test(diff_data_ts)
+adf_test_diff
+
+})
+
+
+```
+Se aplico la prueba ADF en la serie diferenciada arrojó un estadístico de prueba de -15.347 y un valor p de 0.01. Estos resultados indican una evidencia que la serie temporal tiene una tendencia constante  unitaria , lo que implica que la serie es estacionaria.
+
+## Transformación para Controlar la Tendencia y Variabilidad
+ 
+ 
+```{r}
+# Transformación logarítmica
+log_data_ts <- log(data_ts)
+
+# Gráfico de la serie transformada
+plot(log_data_ts, main="Serie Transformada (Logarítmica)", ylab="Valor Transformado", xlab="Tiempo")
+
+```
+
+```{r}
+# Cargar el paquete knitr
+library(knitr)
+
+# métricas antes de la transformación
+cv_before <- sd(data_ts) / mean(data_ts) * 100
+sd_before <- sd(data_ts)
+iqr_before <- IQR(data_ts)
+
+# Aplicar la transformación logarítmica
+log_data_ts <- log(data_ts)
+
+# métricas después de la transformación
+cv_after <- sd(log_data_ts) / mean(log_data_ts) * 100
+sd_after <- sd(log_data_ts)
+iqr_after <- IQR(log_data_ts)
+
+# Crear con los resultados
+results <- data.frame(
+  Métrica = c("Coeficiente de Variación (CV)", "Desviación Estándar", "Rango Intercuartílico (IQR)"),
+  Antes_de_la_Transformación = c(cv_before, sd_before, iqr_before),
+  Después_de_la_Transformación = c(cv_after, sd_after, iqr_after)
+)
+
+# Imprimir 
+knitr::kable(results, caption = "Métricas antes y después de la transformación")
+
+
+
+```
+
+Antes de la transformación, el coeficiente de variación (CV) es 25.42, la desviación estándar es 8961.58 y el rango intercuartílico (IQR) es 17332.
+Después de la transformación, el CV se reduce significativamente a 2.29, la desviación estándar se reduce a 0.24 y el IQR se reduce a 0.47. Estas reducciones indican una disminución significativa en la variabilidad de la serie después de la transformación.
+ 
+
+
+
+## Justificación 
+ 
+ 
+1.  Prueba de Dickey-Fuller (ADF) estacionariedad :
+ 
+Es importante evaluar la estacionariedad de la serie temporal antes de aplicar modelos de series temporales. La prueba ADF nos permite determinar si la serie es estacionaria o no, lo que influye en la selección y aplicación de modelos adecuados.
+
+
+
+2. Diferenciación de la Serie Temporal:
+
+La diferenciación es un paso común para lograr la estacionariedad en series temporales no estacionarias. Eliminar tendencias y patrones no estacionarios permite aplicar modelos más simples y eficientes, adicionalmente mejorar la interpretabilidad de los resultados al eliminar tendencias y variaciones.
+
+3. la transformación:
+
+La transformación se utilizo para estabilizar la varianza y controlar la tendencia en la serie temporal. Esto es importante para mejorar la interpretacion de los datos y facilitar la identificación de patrones temporales. Además, la reducción de la variabilidad puede hacer que la serie sea más predecible y fácil de modela..
+
+
+
+
+<!--chapter:end:Capitulo-2.Rmd-->
+
+# Avance  4  
+
+##  Método de Holt-Winters:
+
+El método de Holt-Winters es una técnica de suavizado exponencial que se utiliza comúnmente para pronosticar datos de series de tiempo. Se compone de tres componentes: nivel, tendencia y estacionalidad.
+
+##  Suavizamiento Exponencial:
+Primero, aplicaremos el suavizamiento exponencial simple para suavizar la serie de tiempo y estimar los valores de nivel, tendencia y estacionalidad
+```{r}
+library(forecast)
+library(ggplot2)
+
+# Cargar los datos
+data <- read.csv("Gold Price.csv")
+
+# Convertir la columna "Date" en formato de fecha
+data$Date <- as.Date(data$Date)
+
+# Crear la serie temporal
+data_ts <- ts(data$Price, start = c(2015, 1), frequency = 12)
+
+```
+
+```{r}
+
+hw_model <- HoltWinters(data_ts)
+```
+
+
+##  Pronóstico:
+Luego, utilizaremos el modelo Holt-Winters para hacer pronósticos futuros. en un  12 meses
+
+
+```{r}
+# Pronóstico
+hw_forecast <- forecast(hw_model, h = 12)  # Pronosticar los próximos 12 meses
+
+```
+
+
+###  Suavizamiento Exponencial:
+Además, aplicaremos el suavizamiento exponencial simple para obtener una versión suavizada de la serie de tiempo.
+
+```{r}
+
+exp_smooth <- HoltWinters(data_ts, beta = FALSE, gamma = FALSE)
+smoothed_data <- forecast:::forecast.HoltWinters(exp_smooth, h = length(data_ts))
+
+```
+
+
+##  Visualización:
+
+Finalmente, visualizaremos los resultados del método de Holt-Winters y del suavizamiento exponencial.
+
+
+
+```{r}
+autoplot(hw_forecast) +
+  autolayer(data_ts, series = "Precio Oro") +
+  xlab("Año") + ylab("Precio") +
+  ggtitle("Pronóstico del Precio del Oro con Holt-Winters")
+
+# Visualización de suavizamiento exponencial
+autoplot(smoothed_data) +
+  autolayer(data_ts, series = "Precio Oro") +
+  xlab("Año") + ylab("Precio") +
+  ggtitle("Suavizamiento Exponencial del Precio del Oro")
+```
+## Calculando las métricas para el método de Holt-Winters
+```{r}
+hw_accuracy <- accuracy(hw_forecast)
+print("Métricas para Holt-Winters:")
+print(hw_accuracy)
+```
+
+
+## Calculando las métricas para el suavizamiento exponencial
+```{r}
+smoothed_accuracy <- accuracy(smoothed_data)
+print("Métricas para Suavizamiento Exponencial:")
+print(smoothed_accuracy)
+```
+Los resultados de las métricas proporcionan una comparación entre el método de Holt-Winters y el suavizamiento exponencial en términos de su desempeño en la serie temporal de precios del oro.
+
+•	ME (Error Medio): Ambos métodos tienen errores medios cercanos a cero, lo que indica que en promedio no están sesgados en sus pronósticos.
+
+•	RMSE (Error Cuadrático Medio): El suavizamiento exponencial tiene un RMSE ligeramente más bajo (271.2025) en comparación con Holt-Winters (308.2692). Un RMSE más bajo indica que el suavizamiento exponencial tiene un mejor ajuste a los datos de entrenamiento.
+
+•	MAE (Error Absoluto Medio): Similar al RMSE, el suavizamiento exponencial también tiene un MAE más bajo (155.8932) en comparación con Holt-Winters (195.5094). Esto indica que, en promedio, las predicciones del suavizamiento exponencial tienden a desviarse menos de los valores reales que las predicciones de Holt-Winters.
+
+•	MPE (Error Porcentual Medio): Ambos métodos tienen valores de MPE cercanos a cero, lo que indica que, en promedio, no hay un sesgo significativo en los pronósticos.
+
+•	MAPE (Error Porcentual Absoluto Medio): El suavizamiento exponencial tiene un MAPE ligeramente más bajo (0.4349868) en comparación con Holt-Winters (0.5384692). Un MAPE más bajo indica que el suavizamiento exponencial tiene una precisión porcentualmente mejor en sus predicciones.
+
+•	MASE (Error Medio Absoluto Escalado): Similar al MAE, el suavizamiento exponencial tiene un MASE más bajo (0.04096972) en comparación con Holt-Winters (0.05138109). Un MASE más bajo indica que el suavizamiento exponencial tiene una mejor capacidad relativa para predecir la serie temporal en comparación con un método de referencia (generalmente el promedio histórico).
+
+•	ACF1 (Autocorrelación de Primer Orden de los Residuos): Ambos métodos muestran valores de autocorrelación cercanos a cero, lo que indica que los residuos no exhiben una autocorrelación significativa.
+los resultados sugieren que el suavizamiento exponencial tiene un mejor desempeño en términos de precisión y ajuste a los datos de entrenamiento en comparación con el método de Holt-Winters para esta serie temporal. 
+
+
+
+ Avance 7: Facebook Prophet
+
+El modelo Facebook Prophet es una herramienta de código abierto desarrollada por Facebook para el análisis y pronóstico de series temporales. 
+
+Primero cargamos la data.
+  
+```{r}
+library(forecast)
+library(ggplot2)
+
+# Cargar los datos
+data <- read.csv("Gold Price.csv")
+
+```
+
+Ahora nos aseguramos de instalar y cargar el paquete de prophet.
+
+
+
+```{r}
+install.packages("prophet")
+library(prophet)
+
+
+```
+Procedemos a preparar los datos. Para esto, verificamos el formato de la columna date.
+
+```{r}
+data$Date <- as.Date(data$Date)
+
+```
+
+Ahora procedemos a renombrar las columnas Date y proce dado que prophet los requiere bajo un formato específco. 
+
+```{r}
+
+df_prophet <- data.frame(ds = data$Date, y = data$Price)
+m <- prophet(df_prophet)
+
+```
+Veamos la serie de tiempo original. 
+
+
+```{r}
+library(ggplot2)
+
+# Suponiendo que `data` es tu dataframe original con las series de tiempo
+ggplot(data, aes(x = Date, y = Price)) +
+  geom_line() +
+  labs(x = "Fecha", y = "Precio", title = "Serie de Tiempo Original")
+
+```
+veamos como prophet se ajusta y predice sobre los valores originales
+
+
+```{r}
+library(prophet)
+
+
+m <- prophet(df_prophet)
+
+future <- make_future_dataframe(m, periods = 365)
+forecast <- predict(m, future)
+
+```
+```{r}
+
+plot_data <- merge(df_prophet, forecast[, c("ds", "yhat", "yhat_lower", "yhat_upper")], by = "ds", all = TRUE)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Graficar serie de tiempo original y predicciones
+ggplot(plot_data, aes(x = ds)) +
+  geom_line(aes(y = y, color = "Original")) +  
+  geom_line(aes(y = yhat, color = "Predicción")) +
+  labs(x = "Fecha", y = "Precio", title = "Serie de Tiempo Original con Predicciones de Prophet") +
+  scale_color_manual(values = c("Original" = "blue", "Predicción" = "red")) +
+  theme_minimal()
+
+```
+En general, es claro que el prophet predice bastante bien sobre los valores reales, no obstante procedemos a calcular métricas de precisión
+
+```{r}
+
+mae <- mean(abs(forecast$yhat - df_prophet$y))
+
+
+rmse <- sqrt(mean((forecast$yhat - df_prophet$y)^2))
+
+
+mape <- mean(abs((df_prophet$y - forecast$yhat) / df_prophet$y)) * 100
+
+
+cat("MAE:", mae, "\n")
+cat("RMSE:", rmse, "\n")
+cat("MAPE:", mape, "%\n")
+
+```
+MAPE de aproximadamente 13.69306 % indica que las predicciones del modelo Prophet tienen un error absoluto promedio del 13.69306 % respecto a los valores reales. Es una medida relativa que proporciona una perspectiva sobre la magnitud del error en relación con el tamaño de los valores reales. En conclusión el modelo presenta una precisión "decente"
+
+
+Una vez ajustado y evaluado el prophet podemos proceder a realizar una predicción sobre 12 años.
+
+
+```{r}
+future <- make_future_dataframe(m, periods = 12 * 12, freq = "month")
+forecast <- predict(m, future)
+
+```
+
+
+```{r}
+plot(m, forecast)
+
+
+```
+```{r}
+predicted_values <- forecast$yhat
+
+# Calcular MAE, RMSE y MAPE
+mae <- mean(abs(predicted_values - df_prophet$y))
+rmse <- sqrt(mean((predicted_values - df_prophet$y)^2))
+mape <- mean(abs((df_prophet$y - predicted_values) / df_prophet$y)) * 100
+
+# Imprimir métricas
+cat("MAE:", mae, "\n")
+cat("RMSE:", rmse, "\n")
+cat("MAPE:", mape, "%\n")
+
+```
+
+En general la predicción presenta métricas "buenas" podemos ver que este algoritmo es fácil de usar y permite generar rápidamente predicciones que difieren de la típica regresión lineal estándar. Además es especialmente diseñada para predecir sobre intervalos temporales lo cual le da un valor agregado. Las predicciones, presentan un MAPE inferior a 14>% en general lo cual podría ser considerado un "éxito".
+
+<!--chapter:end:Capitulo-3.Rmd-->
+
+# Avance 5 ARIMA
+
+Como alternativa, haremos el modelo ARIMA. ARIMA es una integración de 2 métodos, AR (Auto Regresión) y MM (Media Móvil). Queremos el método ARIMA teniendo en cuenta nuestros datos de estacionalidad, por lo que usaremos STLM con el método ARIMA.
+
+Dividiremos nuestros datos en entrenamiento y testeo. Tenemos datos de 2014 - 2021 e intentaremos pronosticar el precio de los últimos 6 meses.
+
+6 meses = 7 * 4 * 6 = 168
+
+```{r}
+# Data de entrenamiento
+train <- head(data_ts, -168)
+# Data de Test
+test <- tail(data_ts, 168)
+
+gold_arima_stl <- stlm(y = train, method = "arima")
+gold_arima_stl$model
+```
+## Pronóstico Con Modelo Arima
+
+Después de hacer el modelo, intentaremos pronosticar usando nuestros datos de prueba y visualizarlo.
+
+```{r}
+# Pronóstico
+gold_ARIMAforecast <- forecast(gold_arima_stl, h = 168)
+
+# Visualización
+data_ts %>% 
+  autoplot() +
+  autolayer(gold_arima_stl$fitted, lwd = 0.5, 
+            series = "ARIMA model") +
+  autolayer(gold_ARIMAforecast$mean, lwd = 0.5,
+            series = "Forecast 1 year")
+```
+
+En el gráfico podemos ver que la línea roja (modelo ARIMA) con los datos de entrenamiento es bastante similar a nuestros datos originales. Desafortunadamente, la línea azul (Pronóstico) todavía tiene una desviación de los datos originales. Comprobaremos nuestro error con MAPE
+
+```{r}
+MAPE(gold_arima_stl$fitted, train)*100
+```
+```{r}
+MAPE(gold_ARIMAforecast$mean, test)*100
+```
+El error del modelo Arima es de 0.5561707%, y el error del pronóstico es 4.483968%.
+
+
+## Evaluación del Modelo
+
+Después de hacer la predicción, evaluaremos nuestra modelo ARIMA con verificación de suposiciones.
+
+### No Autocorrelación
+
+H0: no tiene autocorrelación
+
+H1: tiene autocorrelación
+
+```{r}
+# ARIMA Model
+Box.test(gold_arima_stl$residuals, type = "Ljung-Box")
+```
+p-value = 0.94 > 0.05 (No correlación)
+
+### Normalidad
+
+H0: Normalmente distribuido
+
+H1: No se sigue una distribución normal
+
+```{r}
+shapiro.test(gold_arima_stl$residuals)
+```
+El p-value < 0,05 (no se distribuye normalmente).
+
+Nuestro modelo falla en la verificación de la normalidad
+
+ Avance 7: Facebook Prophet
+
+El modelo Facebook Prophet es una herramienta de código abierto desarrollada por Facebook para el análisis y pronóstico de series temporales. 
+
+Primero cargamos la data.
+
+```{r}
+library(forecast)
+library(ggplot2)
+
+# Cargar los datos
+data <- read.csv("Gold Price.csv")
+
+```
+
+Ahora nos aseguramos de instalar y cargar el paquete de prophet.
+
+
+```{r}
+install.packages("prophet")
+library(prophet)
+
+
+```
+
+Procedemos a preparar los datos. Para esto, verificamos el formato de la columna date.
+
+```{r}
+data$Date <- as.Date(data$Date)
+
+```
+
+Ahora procedemos a renombrar las columnas Date y proce dado que prophet los requiere bajo un formato específco. 
+
+```{r}
+
+df_prophet <- data.frame(ds = data$Date, y = data$Price)
+m <- prophet(df_prophet)
+
+```
+Veamos la serie de tiempo original. 
+
+
+```{r}
+library(ggplot2)
+
+# Suponiendo que `data` es tu dataframe original con las series de tiempo
+ggplot(data, aes(x = Date, y = Price)) +
+  geom_line() +
+  labs(x = "Fecha", y = "Precio", title = "Serie de Tiempo Original")
+
+```
+
+veamos como prophet se ajusta y predice sobre los valores originales
+
+
+```{r}
+library(prophet)
+
+
+m <- prophet(df_prophet)
+
+future <- make_future_dataframe(m, periods = 365)
+forecast <- predict(m, future)
+
+```
+```{r}
+
+plot_data <- merge(df_prophet, forecast[, c("ds", "yhat", "yhat_lower", "yhat_upper")], by = "ds", all = TRUE)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Graficar serie de tiempo original y predicciones
+ggplot(plot_data, aes(x = ds)) +
+  geom_line(aes(y = y, color = "Original")) +  
+  geom_line(aes(y = yhat, color = "Predicción")) +
+  labs(x = "Fecha", y = "Precio", title = "Serie de Tiempo Original con Predicciones de Prophet") +
+  scale_color_manual(values = c("Original" = "blue", "Predicción" = "red")) +
+  theme_minimal()
+
+```
+
+En general, es claro que el prophet predice bastante bien sobre los valores reales, no obstante procedemos a calcular métricas de precisión
+
+```{r}
+
+mae <- mean(abs(forecast$yhat - df_prophet$y))
+
+
+rmse <- sqrt(mean((forecast$yhat - df_prophet$y)^2))
+
+
+mape <- mean(abs((df_prophet$y - forecast$yhat) / df_prophet$y)) * 100
+
+
+cat("MAE:", mae, "\n")
+cat("RMSE:", rmse, "\n")
+cat("MAPE:", mape, "%\n")
+
+```
+MAPE de aproximadamente 13.69306 % indica que las predicciones del modelo Prophet tienen un error absoluto promedio del 13.69306 % respecto a los valores reales. Es una medida relativa que proporciona una perspectiva sobre la magnitud del error en relación con el tamaño de los valores reales. En conclusión el modelo presenta una precisión "decente"
+
+
+Una vez ajustado y evaluado el prophet podemos proceder a realizar una predicción sobre 12 años.
+
+
+```{r}
+future <- make_future_dataframe(m, periods = 12 * 12, freq = "month")
+forecast <- predict(m, future)
+
+```
+
+
+```{r}
+plot(m, forecast)
+
+
+```
+
+```{r}
+predicted_values <- forecast$yhat
+
+# Calcular MAE, RMSE y MAPE
+mae <- mean(abs(predicted_values - df_prophet$y))
+rmse <- sqrt(mean((predicted_values - df_prophet$y)^2))
+mape <- mean(abs((df_prophet$y - predicted_values) / df_prophet$y)) * 100
+
+# Imprimir métricas
+cat("MAE:", mae, "\n")
+cat("RMSE:", rmse, "\n")
+cat("MAPE:", mape, "%\n")
+
+```
+
+En general la predicción presenta métricas "buenas" podemos ver que este algoritmo es fácil de usar y permite generar rápidamente predicciones que difieren de la típica regresión lineal estándar. Además es especialmente diseñada para predecir sobre intervalos temporales lo cual le da un valor agregado. Las predicciones, presentan un MAPE inferior a 14% en general lo cual podría ser considerado un "éxito".
+
+<!--chapter:end:Capitulo-4.Rmd-->
+
+# Avance 6: Facebook Prophet
+
+El modelo Facebook Prophet es una herramienta de código abierto desarrollada por Facebook para el análisis y pronóstico de series temporales. 
+
+## Cargue de data.
+
+```{r}
+library(forecast)
+library(ggplot2)
+
+# Cargar los datos
+data <- read.csv("Gold Price.csv")
+
+```
+
+## intalación y cargue del paquete prophet.
+
+
+```{r}
+install.packages("prophet")
+library(prophet)
+
+
+```
+
+## Preparación de datos. 
+
+Para esto, verificamos el formato de la columna date.
+
+```{r}
+data$Date <- as.Date(data$Date)
+
+```
+
+Ahora procedemos a renombrar las columnas Date y proce dado que prophet los requiere bajo un formato específco. 
+
+```{r}
+
+df_prophet <- data.frame(ds = data$Date, y = data$Price)
+m <- prophet(df_prophet)
+
+```
+Veamos la serie de tiempo original. 
+
+
+```{r}
+library(ggplot2)
+
+# Suponiendo que `data` es tu dataframe original con las series de tiempo
+ggplot(data, aes(x = Date, y = Price)) +
+  geom_line() +
+  labs(x = "Fecha", y = "Precio", title = "Serie de Tiempo Original")
+
+```
+## Modelo Prophet
+
+veamos como prophet se ajusta y predice sobre los valores originales
+
+
+```{r}
+library(prophet)
+
+
+m <- prophet(df_prophet)
+
+future <- make_future_dataframe(m, periods = 365)
+forecast <- predict(m, future)
+
+```
+```{r}
+
+plot_data <- merge(df_prophet, forecast[, c("ds", "yhat", "yhat_lower", "yhat_upper")], by = "ds", all = TRUE)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Graficar serie de tiempo original y predicciones
+ggplot(plot_data, aes(x = ds)) +
+  geom_line(aes(y = y, color = "Original")) +  
+  geom_line(aes(y = yhat, color = "Predicción")) +
+  labs(x = "Fecha", y = "Precio", title = "Serie de Tiempo Original con Predicciones de Prophet") +
+  scale_color_manual(values = c("Original" = "blue", "Predicción" = "red")) +
+  theme_minimal()
+
+```
+
+En general, es claro que el prophet predice bastante bien sobre los valores reales, no obstante procedemos a calcular métricas de precisión
+
+```{r}
+
+mae <- mean(abs(forecast$yhat - df_prophet$y))
+
+
+rmse <- sqrt(mean((forecast$yhat - df_prophet$y)^2))
+
+
+mape <- mean(abs((df_prophet$y - forecast$yhat) / df_prophet$y)) * 100
+
+
+cat("MAE:", mae, "\n")
+cat("RMSE:", rmse, "\n")
+cat("MAPE:", mape, "%\n")
+
+```
+MAPE de aproximadamente 13.69306 % indica que las predicciones del modelo Prophet tienen un error absoluto promedio del 13.69306 % respecto a los valores reales. Es una medida relativa que proporciona una perspectiva sobre la magnitud del error en relación con el tamaño de los valores reales. En conclusión el modelo presenta una precisión "decente"
+
+
+Una vez ajustado y evaluado el prophet podemos proceder a realizar una predicción sobre 12 años.
+
+
+```{r}
+future <- make_future_dataframe(m, periods = 12 * 12, freq = "month")
+forecast <- predict(m, future)
+
+```
+
+
+```{r}
+plot(m, forecast)
+
+
+```
+
+```{r}
+predicted_values <- forecast$yhat
+
+# Calcular MAE, RMSE y MAPE
+mae <- mean(abs(predicted_values - df_prophet$y))
+rmse <- sqrt(mean((predicted_values - df_prophet$y)^2))
+mape <- mean(abs((df_prophet$y - predicted_values) / df_prophet$y)) * 100
+
+# Imprimir métricas
+cat("MAE:", mae, "\n")
+cat("RMSE:", rmse, "\n")
+cat("MAPE:", mape, "%\n")
+
+```
+## Conclusión
+
+En general la predicción presenta métricas "buenas" podemos ver que este algoritmo es fácil de usar y permite generar rápidamente predicciones que difieren de la típica regresión lineal estándar. Además es especialmente diseñada para predecir sobre intervalos temporales lo cual le da un valor agregado. Las predicciones, presentan un MAPE inferior a 14% en general lo cual podría ser considerado un "éxito".
+
+<!--chapter:end:Capitulo-5.Rmd-->
+
+# avance 7: Red neuronal 
+
+primero cargamos la data, dado que esto es una red neuronal y por lo general para esto se usa tensorflow, se correran los siguientes chunks en códigos de python. Las redes neuronales son modelos muy poderosos para las predicción y reconocimiento de patrones auqneu generalmente suelen usarse en reconocimiento de imágenes, también pueden ser usadas en distintos contextos.
+
+
+```{python}
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LSTM
+import matplotlib.pyplot as plt
+
+# Cargar los datos desde el archivo CSV
+data = pd.read_csv("Gold Price.csv")
+
+# Convertir la columna Date a tipo datetime si aún no lo está
+data['Date'] = pd.to_datetime(data['Date'])
+
+# Convertir la columna Date a un formato numérico (por ejemplo, número de días desde una fecha de referencia)
+data['NumericDate'] = (data['Date'] - data['Date'].min()) / np.timedelta64(1, 'D')
+
+# Verificar las primeras filas de los datos para asegurarse de que la conversión haya sido exitosa
+print(data.head())
+
+```
+Ahora procedemos a construir la red neuronal, vamos a dividir la data en entrenamiento y prueba como es el procedimiento estándar. Definimos price como la variable objetivo y las demás varaibles que queremos analizar las incluimos en X, cabe acalrar que una gran ventaja de este tipo de modelos es que se pueden incluir varias variables al análisis con mucha facilidad.
+
+```{python}
+# Dividir los datos en características (X) y variable objetivo (y)
+X = data[['NumericDate', 'High', 'Low', 'Volume']].values
+y = data['Price'].values
+
+# Dividir los datos en entrenamiento y prueba (por ejemplo, 80% - 20%)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+
+# Escalar los datos (opcional, dependiendo del modelo utilizado)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Imprimir las dimensiones de los conjuntos de entrenamiento y prueba
+print(f"Dimensiones de X_train: {X_train.shape}, y_train: {y_train.shape}")
+print(f"Dimensiones de X_test: {X_test.shape}, y_test: {y_test.shape}")
+
+
+```
+
+Ahora definimos una ANN simple para hacer el análisis y la entrenamos. 
+
+```{python}
+# Definir el modelo secuencial de TensorFlow
+model = Sequential([
+    Dense(32, activation='relu', input_shape=(X_train.shape[1],)),
+    Dense(16, activation='relu'),
+    Dense(1)  # Capa de salida para la predicción de Price
+])
+
+# Compilar el modelo
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Entrenar el modelo
+history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_data=(X_test, y_test))
+
+```
+ahora procedemos a ver que tan preciso es el modelo y evaluarlo.
+
+```{python}
+# Evaluar el modelo con los datos de prueba
+loss = model.evaluate(X_test, y_test)
+print(f"Pérdida en los datos de prueba: {loss}")
+
+# Predecir con el modelo entrenado
+predictions = model.predict(X_test)
+
+# Visualizar las predicciones versus los valores reales (opcional)
+plt.figure(figsize=(10, 6))
+plt.plot(data['Date'], data['Price'], label='Actual Price', marker='o')
+plt.plot(data['Date'].iloc[len(X_train):], predictions, label='Predicted Price', marker='x')
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Actual vs Predicted Gold Price')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+```
+como se puede ver la precisión no es exactamente muy acertada aunque no mala, esto se debe a que la red que se implementa es más bien simple. Sin embargo, puede ser mejorada aplicando una CNN, que es mucho más fuerte. Veamos 
+
+
+
+```{python}
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error, r2_score
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout
+import matplotlib.pyplot as plt
+
+# Cargar los datos desde el archivo CSV
+data = pd.read_csv("Gold Price.csv")
+
+# Convertir la columna Date a tipo datetime si aún no lo está
+data['Date'] = pd.to_datetime(data['Date'])
+
+# Convertir la columna Date a un formato numérico (por ejemplo, número de días desde una fecha de referencia)
+data['NumericDate'] = (data['Date'] - data['Date'].min()) / np.timedelta64(1, 'D')
+
+# Dividir los datos en características (X) y variable objetivo (y)
+X = data[['NumericDate', 'High', 'Low', 'Volume']].values
+y = data['Price'].values
+
+# Dividir los datos en entrenamiento y prueba (por ejemplo, 80% - 20%)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+
+# Escalar los datos (opcional, dependiendo del modelo utilizado)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Reorganizar los datos para la entrada en CNN (número de muestras, número de pasos de tiempo, número de características)
+X_train_cnn = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
+X_test_cnn = X_test.reshape((X_test.shape[0], X_test.shape[1], 1))
+
+# Definir el modelo secuencial de TensorFlow con CNN más profunda
+model = Sequential([
+    Conv1D(filters=64, kernel_size=3, activation='relu', input_shape=(X_train_cnn.shape[1], 1)),
+    MaxPooling1D(pool_size=2),
+    Conv1D(filters=64, kernel_size=3, activation='relu'),
+    MaxPooling1D(pool_size=2),
+    Conv1D(filters=32, kernel_size=3, activation='relu'),
+    MaxPooling1D(pool_size=2),
+    Conv1D(filters=32, kernel_size=3, activation='relu'),
+    MaxPooling1D(pool_size=2),
+    Conv1D(filters=16, kernel_size=3, activation='relu'),
+    MaxPooling1D(pool_size=2),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dropout(0.2),
+    Dense(64, activation='relu'),
+    Dropout(0.2),
+    Dense(32, activation='relu'),
+    Dense(1)  # Capa de salida para la predicción de Price
+])
+
+# Compilar el modelo
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Resumen del modelo
+model.summary()
+
+# Entrenar el modelo
+history = model.fit(X_train_cnn, y_train, epochs=100, batch_size=64, validation_data=(X_test_cnn, y_test))
+
+# Evaluar el modelo con los datos de prueba
+loss = model.evaluate(X_test_cnn, y_test)
+print(f"Pérdida en los datos de prueba: {loss}")
+
+# Predecir con el modelo entrenado
+predictions = model.predict(X_test_cnn)
+
+
+
+# Visualizar las predicciones versus los valores reales (opcional)
+plt.figure(figsize=(10, 6))
+plt.plot(data['Date'], data['Price'], label='Actual Price', marker='o')
+plt.plot(data['Date'].iloc[len(X_train):], predictions, label='Predicted Price', marker='x')
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Actual vs Predicted Gold Price')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+```
+
+Como se puede apreciar al hacer la red más profunda y añadir una serie de activaciones inmediatamente s ehace más precisa, paso de una estimación cercana a una en varios casos quasi perfecta auqneu tiene una ligera tendencia a sobre estimar algunos valores. Ahora procedamos a realizar una predicción a diez años con esta CNN.
+
+```{python}
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout
+import matplotlib.pyplot as plt
+
+# Función para generar fechas futuras
+def generate_future_dates(start_date, periods, freq='D'):
+    future_dates = pd.date_range(start=start_date, periods=periods, freq=freq)
+    return future_dates
+
+# Cargar los datos desde el archivo CSV
+data = pd.read_csv("Gold Price.csv")
+
+# Convertir la columna Date a tipo datetime si aún no lo está
+data['Date'] = pd.to_datetime(data['Date'])
+
+# Convertir la columna Date a un formato numérico (por ejemplo, número de días desde una fecha de referencia)
+data['NumericDate'] = (data['Date'] - data['Date'].min()) / np.timedelta64(1, 'D')
+
+# Escalar los datos (opcional, dependiendo del modelo utilizado)
+scaler = StandardScaler()
+X = data[['NumericDate', 'High', 'Low', 'Volume']].values
+X_scaled = scaler.fit_transform(X)
+
+# Reorganizar los datos para la entrada en CNN (número de muestras, número de pasos de tiempo, número de características)
+X_cnn = X_scaled.reshape((X_scaled.shape[0], X_scaled.shape[1], 1))
+
+# Definir el modelo secuencial de TensorFlow con CNN más profunda
+model = Sequential([
+    Conv1D(filters=64, kernel_size=3, activation='relu', input_shape=(X_cnn.shape[1], 1)),
+    MaxPooling1D(pool_size=2),
+    Conv1D(filters=64, kernel_size=3, activation='relu'),
+    MaxPooling1D(pool_size=2),
+    Conv1D(filters=32, kernel_size=3, activation='relu'),
+    MaxPooling1D(pool_size=2),
+    Conv1D(filters=32, kernel_size=3, activation='relu'),
+    MaxPooling1D(pool_size=2),
+    Conv1D(filters=16, kernel_size=3, activation='relu'),
+    MaxPooling1D(pool_size=2),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dropout(0.2),
+    Dense(64, activation='relu'),
+    Dropout(0.2),
+    Dense(32, activation='relu'),
+    Dense(1)  # Capa de salida para la predicción de Price
+])
+
+# Compilar el modelo
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Entrenar el modelo con todos los datos disponibles
+model.fit(X_cnn, data['Price'].values, epochs=100, batch_size=64)
+
+# Generar fechas futuras para predecir
+start_date = data['Date'].max() + pd.Timedelta(days=1)
+future_dates = generate_future_dates(start_date, periods=3650)  # 3650 días = 10 años
+
+# Convertir las fechas futuras a formato numérico y escalarlas
+future_numeric_dates = (future_dates - data['Date'].min()) / np.timedelta64(1, 'D')
+future_data = np.column_stack([future_numeric_dates, np.zeros_like(future_numeric_dates), np.zeros_like(future_numeric_dates), np.zeros_like(future_numeric_dates)])
+future_data_scaled = scaler.transform(future_data)
+X_future_cnn = future_data_scaled.reshape((future_data_scaled.shape[0], future_data_scaled.shape[1], 1))
+
+# Realizar predicciones para las fechas futuras
+future_predictions = model.predict(X_future_cnn)
+
+# Crear un DataFrame con las fechas y las predicciones
+future_df = pd.DataFrame({
+    'Date': future_dates,
+    'Predicted Price': future_predictions.flatten()
+})
+
+# Visualizar las predicciones
+plt.figure(figsize=(12, 8))
+plt.plot(data['Date'], data['Price'], label='Actual Price', marker='o')
+plt.plot(future_df['Date'], future_df['Predicted Price'], label='Predicted Price', marker='x')
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Actual vs Predicted Gold Price')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+```
+
+
+El modelo actual muestra un buen desempeño al predecir los precios del oro utilizando los datos de prueba disponibles, lo cual indica que puede capturar eficazmente los patrones presentes en los datos históricos. Sin embargo, al enfrentarse a la tarea de realizar predicciones a largo plazo, particularmente en un escenario donde no hay datos de prueba adicionales, se evidencia una limitación significativa. Esto sugiere que la arquitectura actual de la red neuronal, aunque mejorada con capas convolucionales y totalmente conectadas para capturar relaciones complejas, puede no ser lo suficientemente robusta para modelar con precisión las variaciones futuras del precio del oro. La falta de datos futuros impide al modelo generalizar más allá de los patrones históricos aprendidos, subrayando la necesidad de una arquitectura aún más poderosa y una mejor selección de características para capturar factores externos y dinámicas del mercado que influencian los precios del oro a largo plazo.
+
+Con lo que se concluye que a pesar de que una red neuronal es muy poderosa a la hora de predecir en base a conductas aprendidas en el corto plazo, pero la cantidad que trabajo que requeriría el construir una capaz de hacer predicciones  acertadas para el futuro no permite considerarlo una herramienta óptima para el caso, es por esto que generalmente se emplean para reconocimiento de imágenes ne vez de predicciones a largo plazo. 
+
+<!--chapter:end:Capitulo-6.Rmd-->
+
