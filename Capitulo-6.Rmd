@@ -2,15 +2,6 @@
 
 primero cargamos la data, dado que esto es una red neuronal y por lo general para esto se usa tensorflow, se correran los siguientes chunks en códigos de python. Las redes neuronales son modelos muy poderosos para las predicción y reconocimiento de patrones auqneu generalmente suelen usarse en reconocimiento de imágenes, también pueden ser usadas en distintos contextos.
 
-```{r}
-library(reticulate)
-py_install("pandas")
-py_install("numpy")
-py_install("tensorflow")
-```
-
-
-
 ```{python}
 import pandas as pd
 import numpy as np
